@@ -12,17 +12,19 @@ Se l'altro indovina si preme **"Ha indovinato! Avanti →"** e la prova successi
 compare da sola nella scheda dell'altro (il telefono passa di mano). Alla fine
 arriva la schermata di successo con i coriandoli e i punteggi.
 
-Ordine delle prove:
+Parte **Francescone**: è il primo a dover indovinare, quindi il telefono comincia
+in mano a Margherita. Da lì cambia mano a ogni prova, senza mai due turni di fila
+alla stessa persona.
 
-| # | Chi chiede | Chi indovina | Prova |
-|---|------------|--------------|-------|
-| 1 | Francescone | Margherita | "Come si chiama il nostro gruppo?" → *Costantinopoli* |
-| 2 | Margherita | Francescone | Mimo → *Clarinetto* |
-| 3 | Francescone | Margherita | Foto del mezzo chilo di stracciatella → *una schiscetta* |
-| 4 | Margherita | Francescone | Indovinello in versi → *Margherita* |
+| # | Chi ha il telefono | Chi indovina | Prova |
+|---|--------------------|--------------|-------|
+| 1 | Margherita | Francescone | Mimo → *Clarinetto* |
+| 2 | Francescone | Margherita | "Come si chiama il nostro gruppo?" → *Costantinopoli* |
+| 3 | Margherita | Francescone | Indovinello in versi → *Margherita* |
+| 4 | Francescone | Margherita | Foto del mezzo chilo di stracciatella → *una schiscetta* |
 | 5 | Margherita | Francescone | "Il vostro prof disperso sulle Alpi?" → *Dell'Amico* |
 
-## La foto della domanda 3
+## La foto della quarta prova
 
 È già nel repository, in `foto/stracciatella.jpg`. Per sostituirla basta
 rimpiazzare il file mantenendo lo stesso nome, oppure cambiare il campo `img`

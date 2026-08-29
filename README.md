@@ -20,14 +20,14 @@ Ordine delle prove:
 | 2 | Margherita | Francescone | Mimo → *Clarinetto* |
 | 3 | Francescone | Margherita | Foto del mezzo chilo di stracciatella → *una schiscetta* |
 | 4 | Margherita | Francescone | Indovinello in versi → *Margherita* |
-| 5 | Margherita | Francescone | Mimo → *la mossa dell'amico Move* |
+| 5 | Margherita | Francescone | "Il vostro prof disperso sulle Alpi?" → *Dell'Amico* |
 
 ## La foto della domanda 3
 
-Va messa nel repository come **`foto/stracciatella.jpg`** (stesso nome, stessa
-cartella). Finché il file non c'è, al suo posto la pagina mostra un riquadro
-tratteggiato con il promemoria. Per usare un altro nome basta cambiare il campo
-`img` della domanda.
+È già nel repository, in `foto/stracciatella.jpg`. Per sostituirla basta
+rimpiazzare il file mantenendo lo stesso nome, oppure cambiare il campo `img`
+della domanda. Se il file manca, al suo posto la pagina mostra un riquadro
+tratteggiato con il promemoria.
 
 ## Come modificare le domande
 

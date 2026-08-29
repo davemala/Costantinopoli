@@ -1,5 +1,0 @@
-Metti qui la foto del mezzo chilo di stracciatella Coop, con il nome esatto:
-
-    stracciatella.jpg
-
-Se il file non c'è, la pagina mostra un riquadro tratteggiato al suo posto.

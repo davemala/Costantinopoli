@@ -22,7 +22,6 @@
     --her-soft:#f8e8ec;
     --him:#5f7f8c;
     --him-soft:#e6f0f3;
-    --ok:#4b8a5c;
     --shadow:0 10px 30px rgba(80,58,36,.10);
     --radius:18px;
   }
@@ -34,7 +33,6 @@
       var(--bg);
     color:var(--ink);
     font-family:'Jost', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-weight:400;
     line-height:1.55;
     min-height:100vh;
     -webkit-font-smoothing:antialiased;
@@ -56,10 +54,7 @@
     color:var(--ink-soft);font-size:13px;letter-spacing:.16em;
     text-transform:uppercase;margin:0;
   }
-  .rule{
-    width:70px;height:1px;background:var(--gold-soft);
-    margin:16px auto 0;position:relative;
-  }
+  .rule{width:70px;height:1px;background:var(--gold-soft);margin:16px auto 0;position:relative}
   .rule::after{
     content:"❦";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
     background:var(--bg);padding:0 10px;color:var(--gold);font-size:13px;
@@ -74,8 +69,8 @@
     transition:width .5s cubic-bezier(.4,0,.2,1);
   }
   .progress-label{
-    display:flex;justify-content:space-between;align-items:center;
-    font-size:12px;letter-spacing:.1em;text-transform:uppercase;
+    display:flex;justify-content:space-between;align-items:center;gap:10px;
+    font-size:12px;letter-spacing:.08em;text-transform:uppercase;
     color:var(--ink-soft);margin-top:8px;
   }
 
@@ -85,9 +80,9 @@
     background:var(--bg-soft);padding:6px;border-radius:14px;margin-bottom:18px;
   }
   .tab{
-    appearance:none;border:0;cursor:pointer;
-    font-family:inherit;font-size:15px;font-weight:500;letter-spacing:.02em;
-    padding:12px 8px;border-radius:10px;background:transparent;color:var(--ink-soft);
+    appearance:none;border:0;cursor:pointer;font-family:inherit;
+    font-size:15px;font-weight:500;padding:12px 8px;border-radius:10px;
+    background:transparent;color:var(--ink-soft);
     transition:background .2s, color .2s, box-shadow .2s;
     display:flex;align-items:center;justify-content:center;gap:8px;
   }
@@ -102,30 +97,56 @@
   /* ---------- Card ---------- */
   .card{
     background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
-    box-shadow:var(--shadow);padding:26px 22px;
-    animation:rise .35s ease both;
+    box-shadow:var(--shadow);padding:26px 22px;animation:rise .35s ease both;
   }
   @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-  .eyebrow{
-    font-size:11px;letter-spacing:.18em;text-transform:uppercase;
-    color:var(--ink-soft);margin:0 0 14px;
-  }
-  .asker{font-weight:500;color:var(--ink)}
-  .question{
-    font-family:'Cormorant Garamond', Georgia, serif;
-    font-size:clamp(23px,5.2vw,30px);line-height:1.3;margin:0 0 4px;font-weight:600;
-  }
+  .eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 14px}
+  .eyebrow strong{color:var(--ink);font-weight:500}
   .badge{
     display:inline-block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;
     padding:5px 11px;border-radius:99px;margin-bottom:16px;
   }
   .badge.her{background:var(--her-soft);color:var(--her)}
   .badge.him{background:var(--him-soft);color:var(--him)}
+  .question{
+    font-family:'Cormorant Garamond', Georgia, serif;
+    font-size:clamp(23px,5.2vw,30px);line-height:1.3;margin:0;font-weight:600;
+  }
+  .poem{
+    font-family:'Cormorant Garamond', Georgia, serif;
+    font-size:clamp(19px,4.4vw,23px);line-height:1.65;font-style:italic;
+    margin:0;white-space:pre-line;
+  }
+  .instruction{color:var(--ink-soft);font-size:14px;margin:0 0 14px}
+
+  /* foto */
+  figure{margin:18px 0 0}
+  figure img{width:100%;border-radius:12px;display:block;border:1px solid var(--border)}
+  .photo-missing{
+    border:1px dashed var(--gold-soft);background:var(--bg-soft);border-radius:12px;
+    padding:26px 18px;text-align:center;color:var(--ink-soft);font-size:14px;
+  }
+  .photo-missing code{background:#fff;padding:2px 6px;border-radius:5px;font-size:13px}
+
+  /* segreto da svelare al tocco */
+  .secret{
+    margin-top:18px;border-radius:14px;background:var(--bg-soft);
+    border:1px dashed var(--gold-soft);padding:24px 18px;text-align:center;
+    cursor:pointer;position:relative;user-select:none;
+  }
+  .secret .lbl{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin:0 0 8px}
+  .secret .word{
+    font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(26px,6vw,34px);
+    font-weight:600;margin:0;filter:blur(9px);transition:filter .3s ease;
+  }
+  .secret.open .word{filter:none}
+  .secret .tap{display:block;margin-top:10px;font-size:12px;color:var(--ink-soft);letter-spacing:.06em}
+  .secret.open .tap{visibility:hidden}
 
   .answer{
     margin-top:20px;padding:16px 18px;border-radius:12px;
-    background:var(--bg-soft);border:1px dashed var(--gold-soft);
-    display:none;animation:rise .3s ease both;
+    background:var(--bg-soft);border:1px dashed var(--gold-soft);display:none;
+    animation:rise .3s ease both;
   }
   .answer.show{display:block}
   .answer .lbl{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin:0 0 6px}
@@ -136,7 +157,6 @@
     appearance:none;cursor:pointer;font-family:inherit;font-size:15px;font-weight:500;
     padding:14px 18px;border-radius:12px;border:1px solid transparent;
     transition:transform .12s ease, filter .2s ease, background .2s ease;
-    letter-spacing:.01em;
   }
   .btn:active{transform:translateY(1px)}
   .btn-primary{background:var(--ink);color:#fff}
@@ -146,17 +166,14 @@
   .btn-gold{background:var(--gold);color:#fff}
   .btn-gold:hover{filter:brightness(1.07)}
 
-  /* ---------- Waiting ---------- */
+  /* ---------- Attesa ---------- */
   .waiting{text-align:center;padding:44px 22px}
   .waiting .icon{font-size:32px;margin-bottom:10px;display:block}
-  .waiting h2{
-    font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;
-    font-size:26px;margin:0 0 6px;
-  }
+  .waiting h2{font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;font-size:26px;margin:0 0 6px}
   .waiting p{color:var(--ink-soft);margin:0;font-size:15px}
   .waiting .btn{margin-top:20px}
 
-  /* ---------- Success ---------- */
+  /* ---------- Successo ---------- */
   .success{text-align:center;padding:44px 24px}
   .success .crown{font-size:44px;display:block;margin-bottom:8px}
   .success h2{
@@ -164,27 +181,18 @@
     font-weight:600;margin:0 0 10px;
   }
   .success p{color:var(--ink-soft);margin:0 auto;max-width:44ch}
-  .scoreboard{
-    display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:26px 0 22px;
-  }
-  .score{
-    background:var(--bg-soft);border-radius:14px;padding:16px 10px;
-  }
+  .scoreboard{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:26px 0 22px}
+  .score{background:var(--bg-soft);border-radius:14px;padding:16px 10px}
   .score .name{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
-  .score .val{
-    font-family:'Cormorant Garamond',Georgia,serif;font-size:34px;font-weight:600;line-height:1.1;
-  }
+  .score .val{font-family:'Cormorant Garamond',Georgia,serif;font-size:34px;font-weight:600;line-height:1.1}
   .score.her .val{color:var(--her)}
   .score.him .val{color:var(--him)}
 
   footer{text-align:center;margin-top:28px;color:var(--ink-soft);font-size:12px;letter-spacing:.06em}
 
-  /* ---------- Confetti ---------- */
   #confetti{position:fixed;inset:0;pointer-events:none;z-index:50}
   .petal{position:absolute;top:-40px;font-size:18px;animation:fall linear forwards}
-  @keyframes fall{
-    to{transform:translateY(105vh) rotate(var(--spin));opacity:0}
-  }
+  @keyframes fall{to{transform:translateY(105vh) rotate(var(--spin));opacity:0}}
   .hidden{display:none !important}
 </style>
 </head>
@@ -204,8 +212,8 @@
     <div class="progress">
       <div class="progress-track"><div class="progress-fill" id="bar"></div></div>
       <div class="progress-label">
-        <span id="counter">Domanda 1 di 10</span>
-        <span id="turnLabel">Tocca a Margherita</span>
+        <span id="counter">Domanda 1 di 5</span>
+        <span id="turnLabel"></span>
       </div>
     </div>
 
@@ -227,7 +235,7 @@
   <section id="final" class="card success hidden">
     <span class="crown">🎉</span>
     <h2>Ce l'avete fatta!</h2>
-    <p>Tutte le domande superate. Vi conoscete davvero — o siete solo bravissimi a barare insieme.</p>
+    <p>Tutte le prove superate. Vi conoscete davvero — o siete solo bravissimi a barare insieme.</p>
     <div class="scoreboard">
       <div class="score her"><div class="val" id="scoreHer">0</div><div class="name">Margherita</div></div>
       <div class="score him"><div class="val" id="scoreHim">0</div><div class="name">Francescone</div></div>
@@ -243,29 +251,52 @@
 
 <script>
 /* =========================================================================
-   DOMANDE — modifica solo questa lista.
-   to      : chi deve INDOVINARE ("margherita" oppure "francescone")
-             (l'altro legge la domanda ad alta voce)
-   q       : la domanda
-   a       : la risposta giusta (si può rivelare con "Mostra la risposta")
+   LE DOMANDE — è l'unica parte da modificare.
+
+   indovina : chi deve INDOVINARE ("margherita" o "francescone").
+              La scheda con la domanda compare nell'altra scheda, cioè in mano
+              a chi fa la domanda: così chi risponde non vede la soluzione.
+   tipo     : "testo"   -> domanda letta ad alta voce
+              "mimo"    -> parola da mimare (resta sfocata finché non la tocchi)
+              "foto"    -> mostra una foto e si chiede che cos'è
+              "poesia"  -> indovinello in versi da leggere ad alta voce
+   q        : il testo (domanda, versi, o istruzione per chi mima)
+   a        : la risposta giusta
+   img      : solo per tipo "foto", percorso dell'immagine
    ========================================================================= */
 const QUIZ = [
-  { to:"margherita",  q:"Qual è stata la prima cosa che ho pensato quando ti ho vista la prima volta?", a:"Scrivi qui la risposta giusta" },
-  { to:"francescone", q:"Qual è il piatto che cucino meglio secondo me?",                                a:"Scrivi qui la risposta giusta" },
-  { to:"margherita",  q:"Dove sarei disposto a trasferirmi domani senza pensarci?",                      a:"Scrivi qui la risposta giusta" },
-  { to:"francescone", q:"Qual è la mia canzone del cuore?",                                              a:"Scrivi qui la risposta giusta" },
-  { to:"margherita",  q:"Qual è il mio difetto che tu sopporti con più pazienza?",                       a:"Scrivi qui la risposta giusta" },
-  { to:"francescone", q:"Come si chiamava il mio primo animale domestico?",                              a:"Scrivi qui la risposta giusta" },
-  { to:"margherita",  q:"Qual è il regalo più bello che mi hai fatto?",                                  a:"Scrivi qui la risposta giusta" },
-  { to:"francescone", q:"Che film potrei rivedere all'infinito senza stancarmi?",                        a:"Scrivi qui la risposta giusta" },
-  { to:"margherita",  q:"Qual è stata la nostra vacanza più bella insieme?",                             a:"Scrivi qui la risposta giusta" },
-  { to:"francescone", q:"Cosa ho pensato esattamente il giorno in cui ci siamo detti di sì?",            a:"Scrivi qui la risposta giusta" }
+  {
+    indovina:"margherita", tipo:"testo",
+    q:"Come si chiama il nostro gruppo?",
+    a:"Costantinopoli"
+  },
+  {
+    indovina:"francescone", tipo:"mimo",
+    q:"Clarinetto",
+    a:"Clarinetto"
+  },
+  {
+    indovina:"margherita", tipo:"foto",
+    q:"Mostrale la foto e chiedile: che cos'è questa?",
+    img:"foto/stracciatella.jpg",
+    a:"Una schiscetta (mezzo chilo di stracciatella Coop)"
+  },
+  {
+    indovina:"francescone", tipo:"poesia",
+    q:"Sono un fiore di campo, semplice e sincero,\ncuore dorato e petali di neve.\nChi è innamorato mi sfoglia piano piano\ne mi domanda: m'ama o non m'ama?\n\nSono anche la pizza più vera che ci sia,\nrosso, bianco e verde: l'Italia in una fetta.\nMa la più bella di tutte quante\nnon sta nel prato e neanche nel piatto:\noggi ti sta accanto, vestita di bianco.",
+    a:"Margherita"
+  },
+  {
+    indovina:"francescone", tipo:"mimo",
+    q:"La mossa tipica dell'amico Move",
+    a:"Move"
+  }
 ];
 
 const NAMES = { margherita:"Margherita", francescone:"Francescone" };
 const other = who => who === "margherita" ? "francescone" : "margherita";
 
-const STORAGE_KEY = "quiz-sposi-v1";
+const STORAGE_KEY = "quiz-sposi-v2";
 const state = { index:0, revealed:false, score:{ margherita:0, francescone:0 } };
 
 const $ = id => document.getElementById(id);
@@ -273,44 +304,81 @@ const panels = { margherita:$("panel-margherita"), francescone:$("panel-francesc
 const tabs   = { margherita:$("tab-margherita"),   francescone:$("tab-francescone")   };
 let viewing = "margherita";
 
-/* ---------- persistenza (facoltativa, non blocca nulla se assente) ------- */
+/* ---------- salvataggio (se il browser lo blocca, il gioco funziona lo stesso) */
 function save(){
   try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
 }
 function load(){
   try{
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if(!raw) return;
-    const d = JSON.parse(raw);
-    if(typeof d.index === "number" && d.index >= 0 && d.index <= QUIZ.length){
+    const d = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+    if(d && typeof d.index === "number" && d.index >= 0 && d.index <= QUIZ.length){
       state.index = d.index;
       if(d.score) state.score = { margherita:d.score.margherita|0, francescone:d.score.francescone|0 };
     }
   }catch(e){}
 }
 
-/* ------------------------------- render -------------------------------- */
-function currentTurn(){
-  return QUIZ[state.index] ? QUIZ[state.index].to : "margherita";
+/* --------------------------------- render ------------------------------- */
+const escape = s => s.replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
+
+/* chi tiene il telefono in mano e fa la domanda */
+function asker(item){ return other(item.indovina); }
+function currentAsker(){ return QUIZ[state.index] ? asker(QUIZ[state.index]) : "margherita"; }
+
+function body(item){
+  const chi = NAMES[item.indovina];
+  switch(item.tipo){
+    case "mimo":
+      return `
+        <p class="instruction">Mima questa parola: ${chi} deve indovinarla. Nessun suono, niente labiale!</p>
+        <div class="secret" data-act="unblur">
+          <p class="lbl">Da mimare</p>
+          <p class="word">${escape(item.q)}</p>
+          <span class="tap">Tocca per svelare</span>
+        </div>`;
+    case "foto":
+      return `
+        <p class="instruction">${escape(item.q)}</p>
+        <figure>
+          <img src="${item.img}" alt="Indizio fotografico" onerror="fotoMancante(this)">
+        </figure>`;
+    case "poesia":
+      return `
+        <p class="instruction">Leggi l'indovinello ad alta voce: ${chi} deve capire di chi si parla.</p>
+        <p class="poem">${escape(item.q)}</p>`;
+    default:
+      return `
+        <p class="instruction">Leggi la domanda ad alta voce a ${chi}.</p>
+        <p class="question">${escape(item.q)}</p>`;
+  }
+}
+
+/* se la foto non c'e' ancora, al suo posto compare un promemoria */
+function fotoMancante(img){
+  const f = img.parentNode;
+  f.innerHTML = '<div class="photo-missing">Aggiungi la foto nel repository come <code>' +
+                escape(img.getAttribute('src')) + '</code></div>';
 }
 
 function questionCard(item){
-  const asker = other(item.to);
-  const cls   = item.to === "margherita" ? "her" : "him";
+  const chi = item.indovina;
+  const cls = chi === "margherita" ? "her" : "him";
+  const mostraRisposta = item.tipo !== "mimo";
   return `
     <div class="card">
-      <p class="eyebrow"><span class="asker">${NAMES[asker]}</span> chiede &middot; tu rispondi</p>
-      <span class="badge ${cls}">Turno di ${NAMES[item.to]}</span>
-      <p class="question">${item.q}</p>
+      <p class="eyebrow"><strong>Tocca a te</strong> &middot; il telefono resta in mano tua</p>
+      <span class="badge ${cls}">Deve indovinare ${NAMES[chi]}</span>
+      ${body(item)}
 
+      ${mostraRisposta ? `
       <div class="answer${state.revealed ? " show" : ""}" id="answerBox">
         <p class="lbl">La risposta</p>
-        <p class="txt">${item.a}</p>
-      </div>
+        <p class="txt">${escape(item.a)}</p>
+      </div>` : ""}
 
       <div class="actions">
-        <button class="btn btn-gold" data-act="next">Indovinato! Domanda successiva &rarr;</button>
-        <button class="btn btn-ghost" data-act="reveal">${state.revealed ? "Nascondi la risposta" : "Mostra la risposta"}</button>
+        <button class="btn btn-gold" data-act="next">Ha indovinato! Avanti &rarr;</button>
+        ${mostraRisposta ? `<button class="btn btn-ghost" data-act="reveal">${state.revealed ? "Nascondi la risposta" : "Mostra la risposta"}</button>` : ""}
         <button class="btn btn-ghost" data-act="skip">Non l'ha indovinata &mdash; vai avanti</button>
       </div>
     </div>`;
@@ -319,10 +387,10 @@ function questionCard(item){
 function waitingCard(turn){
   return `
     <div class="card waiting">
-      <span class="icon">⏳</span>
-      <h2>Non è il tuo turno</h2>
-      <p>Adesso tocca a <strong>${NAMES[turn]}</strong>: passagli il telefono e leggi la domanda ad alta voce.</p>
-      <button class="btn btn-primary" data-act="goto">Vai alla scheda di ${NAMES[turn]}</button>
+      <span class="icon">🙈</span>
+      <h2>Niente sbirciate!</h2>
+      <p>Adesso il telefono è di <strong>${NAMES[turn]}</strong>: tu ascolta, guarda e prova a indovinare.</p>
+      <button class="btn btn-primary" data-act="goto">Passa la scheda a ${NAMES[turn]}</button>
     </div>`;
 }
 
@@ -330,9 +398,9 @@ function render(){
   if(state.index >= QUIZ.length){ finish(); return; }
 
   const item = QUIZ[state.index];
-  const turn = item.to;
+  const turn = asker(item);
 
-  panels[turn].innerHTML       = questionCard(item);
+  panels[turn].innerHTML        = questionCard(item);
   panels[other(turn)].innerHTML = waitingCard(turn);
 
   for(const who of ["margherita","francescone"]){
@@ -342,7 +410,7 @@ function render(){
   }
 
   $("counter").textContent   = `Domanda ${state.index + 1} di ${QUIZ.length}`;
-  $("turnLabel").textContent = `Tocca a ${NAMES[turn]}`;
+  $("turnLabel").textContent = `Chiede ${NAMES[turn]}`;
   $("bar").style.width       = (state.index / QUIZ.length * 100) + "%";
   save();
 }
@@ -358,29 +426,29 @@ function finish(){
   save();
 }
 
-/* -------------------------------- azioni ------------------------------- */
-function advance(guessed){
+/* ---------------------------------- azioni ------------------------------ */
+function advance(indovinata){
   const item = QUIZ[state.index];
-  if(guessed) state.score[item.to]++;
+  if(indovinata) state.score[item.indovina]++;
   state.index++;
   state.revealed = false;
-  if(state.index < QUIZ.length) viewing = QUIZ[state.index].to; // apre la scheda dell'altro
+  if(state.index < QUIZ.length) viewing = currentAsker(); // apre la scheda di chi chiede ora
   render();
   window.scrollTo({ top:0, behavior:"smooth" });
 }
 
 document.addEventListener("click", e => {
-  const btn = e.target.closest("[data-act]");
-  if(btn){
-    const act = btn.dataset.act;
-    if(act === "next")   advance(true);
-    if(act === "skip")   advance(false);
-    if(act === "goto"){ viewing = currentTurn(); render(); }
+  const el = e.target.closest("[data-act]");
+  if(el){
+    const act = el.dataset.act;
+    if(act === "next")   return advance(true);
+    if(act === "skip")   return advance(false);
+    if(act === "goto"){ viewing = currentAsker(); return render(); }
+    if(act === "unblur") return el.classList.toggle("open");
     if(act === "reveal"){
       state.revealed = !state.revealed;
-      const box = $("answerBox");
-      box.classList.toggle("show", state.revealed);
-      btn.textContent = state.revealed ? "Nascondi la risposta" : "Mostra la risposta";
+      $("answerBox").classList.toggle("show", state.revealed);
+      el.textContent = state.revealed ? "Nascondi la risposta" : "Mostra la risposta";
     }
     return;
   }
@@ -392,14 +460,14 @@ $("restart").addEventListener("click", () => {
   state.index = 0;
   state.revealed = false;
   state.score = { margherita:0, francescone:0 };
-  viewing = QUIZ[0].to;
+  viewing = currentAsker();
   $("final").classList.add("hidden");
   $("game").classList.remove("hidden");
   $("confetti").innerHTML = "";
   render();
 });
 
-/* ------------------------------- coriandoli ---------------------------- */
+/* -------------------------------- coriandoli ---------------------------- */
 function confetti(){
   const box = $("confetti");
   const chars = ["🤍","💛","🌸","✨","💍","🥂"];
@@ -416,9 +484,9 @@ function confetti(){
   setTimeout(() => { box.innerHTML = ""; }, 11000);
 }
 
-/* --------------------------------- avvio ------------------------------- */
+/* ---------------------------------- avvio ------------------------------- */
 load();
-viewing = currentTurn();
+viewing = currentAsker();
 render();
 </script>
 </body>

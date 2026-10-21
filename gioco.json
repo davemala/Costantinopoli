@@ -17,8 +17,7 @@
     "Qual è una regola che sentite che il reparto ha bisogno?"
   ],
   "arrivo": {
-    "testo": "Complimenti! Ora raggiungete il punto di arrivo (da inserire).",
-    "lat": 45.4642,
-    "lng": 9.19
+    "testo": "Complimenti, avete completato tutte le missioni!\nOra raggiungete il punto di arrivo: tutto il reparto vi aspetta lì.",
+    "link": "https://maps.apple/p/yu6cU1Lfh2LZ~X"
   }
 }

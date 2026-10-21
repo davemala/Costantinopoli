@@ -113,3 +113,37 @@ a.bottone {
   font-weight: 700;
   margin-top: 12px;
 }
+
+.bottone-foto {
+  display: block;
+  text-align: center;
+  padding: 14px;
+  border-radius: 10px;
+  border: 2px dashed var(--verde);
+  color: var(--verde);
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 12px;
+}
+
+.anteprima {
+  display: block;
+  width: 100%;
+  max-height: 50vh;
+  object-fit: contain;
+  border-radius: 10px;
+  background: #eee;
+  margin-bottom: 12px;
+}
+
+button.link {
+  background: none;
+  color: var(--grigio);
+  font-weight: 400;
+  font-size: .9rem;
+  text-decoration: underline;
+  padding: 10px 0 0;
+}
+
+/* Nascosto ma ancora cliccabile tramite la label (su iPhone display:none può non aprire la fotocamera). */
+.file-nascosto { position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden; }

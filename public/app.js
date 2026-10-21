@@ -1,4 +1,5 @@
 const INVIO_OGNI_MS = 20000; // ogni quanto mandare la posizione al server
+const LATO_MAX_FOTO = 1600; // le foto si rimpiccioliscono sul telefono prima dell'invio
 const $ = (id) => document.getElementById(id);
 
 const IPHONE = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
@@ -30,6 +31,7 @@ function scriviToken(t) {
 }
 
 function mostra(s) {
+  if (!squadra || s.fase !== squadra.fase || s.prova !== squadra.prova) azzeraFoto();
   squadra = s;
   scriviToken(s.token);
   $('schermoIngresso').classList.add('nascosto');
@@ -50,7 +52,9 @@ function mostra(s) {
   $('bloccoDomanda').classList.toggle('nascosto', s.fase !== 'domanda');
   $('bloccoArrivo').classList.toggle('nascosto', s.fase !== 'arrivo');
   if (s.fase === 'arrivo') {
-    $('linkMappa').href = `https://www.google.com/maps/search/?api=1&query=${s.arrivo.lat},${s.arrivo.lng}`;
+    const { lat, lng, link } = s.arrivo;
+    $('linkMappa').href = link
+      || (IPHONE ? `https://maps.apple.com/?ll=${lat},${lng}&q=Arrivo` : `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`);
   }
 
   avviaPosizione();
@@ -139,15 +143,86 @@ $('formIngresso').addEventListener('submit', async (e) => {
   }
 });
 
-$('btnFatta').addEventListener('click', async () => {
-  if (!confirm('Avete davvero completato la missione?')) return;
-  $('btnFatta').disabled = true;
+// ---------- Foto della missione ----------
+
+let fotoScelta = null;
+
+function azzeraFoto() {
+  fotoScelta = null;
+  $('campoFoto').value = '';
+  $('anteprima').classList.add('nascosto');
+  $('anteprima').removeAttribute('src');
+  $('btnInviaFoto').classList.add('nascosto');
+  $('erroreFoto').textContent = '';
+}
+
+// Ridisegna la foto su un canvas più piccolo: da 5-10 MB si passa a qualche centinaio di KB.
+function rimpicciolisci(file) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const scala = Math.min(1, LATO_MAX_FOTO / Math.max(img.naturalWidth, img.naturalHeight));
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(img.naturalWidth * scala);
+      canvas.height = Math.round(img.naturalHeight * scala);
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+      URL.revokeObjectURL(url);
+      canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error('Foto non leggibile'))), 'image/jpeg', 0.8);
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error('Questo formato di foto non si apre: provate a sceglierne un\'altra'));
+    };
+    img.src = url;
+  });
+}
+
+$('campoFoto').addEventListener('change', async () => {
+  const file = $('campoFoto').files[0];
+  if (!file) return;
+  $('erroreFoto').textContent = '';
+  try {
+    fotoScelta = await rimpicciolisci(file);
+    $('anteprima').src = URL.createObjectURL(fotoScelta);
+    $('anteprima').classList.remove('nascosto');
+    $('btnInviaFoto').classList.remove('nascosto');
+  } catch (err) {
+    azzeraFoto();
+    $('erroreFoto').textContent = err.message;
+  }
+});
+
+$('btnInviaFoto').addEventListener('click', async () => {
+  if (!fotoScelta) return;
+  const btn = $('btnInviaFoto');
+  btn.disabled = true;
+  btn.textContent = 'Invio in corso…';
+  $('erroreFoto').textContent = '';
+  try {
+    const r = await fetch(`/api/foto?token=${encodeURIComponent(squadra.token)}&prova=${squadra.prova}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'image/jpeg' },
+      body: fotoScelta,
+    });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(j.errore || 'Invio non riuscito');
+    mostra(j);
+    window.scrollTo(0, 0);
+  } catch (err) {
+    $('erroreFoto').textContent = `${err.message === 'Failed to fetch' || err.message === 'Load failed' ? 'Niente rete' : err.message}: riprovate tra poco.`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Invia la foto e vai avanti ✔';
+  }
+});
+
+$('btnSenzaFoto').addEventListener('click', async () => {
+  if (!confirm('Avete completato la missione ma non riuscite a caricare la foto? Fatela vedere ai capi alla fine.')) return;
   try {
     mostra(await chiama('/api/missione-fatta', { token: squadra.token }));
   } catch (err) {
     alert(err.message);
-  } finally {
-    $('btnFatta').disabled = false;
   }
 });
 

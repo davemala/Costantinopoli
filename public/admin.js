@@ -37,6 +37,8 @@ async function chiama(url, dati) {
   return j;
 }
 
+const urlFoto = (f) => `/foto/${encodeURIComponent(f.file)}?password=${encodeURIComponent(password)}`;
+
 function descriviFase(s, totale) {
   if (s.fase === 'arrivo') return 'Verso il punto di arrivo';
   return `${s.fase === 'missione' ? 'Missione' : 'Domanda'} ${s.prova + 1} di ${totale}`;
@@ -50,15 +52,17 @@ function disegnaMappa(dati) {
       attribution: '&copy; OpenStreetMap',
     }).addTo(mappa);
     livelli = L.layerGroup().addTo(mappa);
-    mappa.setView([dati.gioco.arrivo.lat, dati.gioco.arrivo.lng], 14);
+    mappa.setView([42.5, 12.5], 6); // Italia, finché non arrivano posizioni
   }
   livelli.clearLayers();
   const confini = [];
   const conPercorsi = $('mostraPercorsi').checked;
 
-  const arrivo = [dati.gioco.arrivo.lat, dati.gioco.arrivo.lng];
-  L.marker(arrivo).bindTooltip('Punto di arrivo').addTo(livelli);
-  confini.push(arrivo);
+  const { lat, lng } = dati.gioco.arrivo;
+  if (Number.isFinite(lat) && Number.isFinite(lng)) {
+    L.marker([lat, lng]).bindTooltip('Punto di arrivo').addTo(livelli);
+    confini.push([lat, lng]);
+  }
 
   dati.squadre.forEach((s, i) => {
     const colore = COLORI[i % COLORI.length];
@@ -74,7 +78,7 @@ function disegnaMappa(dati) {
       .addTo(livelli);
   });
 
-  if (primaVista && confini.length > 1) {
+  if (primaVista && confini.length) {
     mappa.fitBounds(confini, { padding: [40, 40], maxZoom: 16 });
     primaVista = false;
   }
@@ -82,7 +86,7 @@ function disegnaMappa(dati) {
 
 function disegnaSchede(dati) {
   const totale = dati.gioco.domande.length;
-  const chiave = JSON.stringify(dati.squadre.map((s) => [s.id, s.prova, s.fase, s.risposte.length]));
+  const chiave = JSON.stringify(dati.squadre.map((s) => [s.id, s.prova, s.fase, s.risposte.length, s.foto.length]));
   if (chiave !== chiaveSchede) {
     chiaveSchede = chiave;
     $('squadre').innerHTML = dati.squadre.map((s, i) => `
@@ -90,6 +94,10 @@ function disegnaSchede(dati) {
         <div class="sq-titolo"><span class="colore" style="background:${COLORI[i % COLORI.length]}"></span>${esc(s.nome)}</div>
         <div class="meta">${descriviFase(s, totale)} · entrata alle ${ora(s.creata)}<br><span class="vista"></span></div>
         <div class="missioni">${s.missioni.map((m, n) => `<div class="${n < s.prova || s.fase === 'arrivo' ? 'fatta' : ''}">${n + 1}. ${esc(dati.gioco.missioni[m])}</div>`).join('')}</div>
+        ${s.foto.length ? `<div class="foto">${s.foto.map((f) => `
+          <a href="${urlFoto(f)}" target="_blank" rel="noopener" title="Missione ${f.prova} · ${ora(f.ora)}">
+            <img src="${urlFoto(f)}" loading="lazy" alt="Foto della missione ${f.prova}"><span>M${f.prova}</span>
+          </a>`).join('')}</div>` : ''}
         ${s.risposte.length ? s.risposte.map((r) => `
           <div class="risposta">
             <div class="d">Domanda ${r.prova} · ${ora(r.ora)} — ${esc(r.domanda)}</div>

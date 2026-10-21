@@ -35,7 +35,13 @@
       </div>
 
       <div class="card" id="bloccoMissione">
-        <button id="btnFatta">Missione completata ✔</button>
+        <p><strong>Missione completata?</strong> Caricate una foto come prova.</p>
+        <label class="bottone-foto" for="campoFoto">📷 Scatta o scegli la foto</label>
+        <input id="campoFoto" type="file" accept="image/*" class="file-nascosto">
+        <img id="anteprima" class="anteprima nascosto" alt="Anteprima della foto">
+        <div class="errore" id="erroreFoto"></div>
+        <button id="btnInviaFoto" class="nascosto">Invia la foto e vai avanti ✔</button>
+        <button id="btnSenzaFoto" class="link">Non riusciamo a caricare la foto</button>
       </div>
 
       <form class="card" id="bloccoDomanda">
@@ -46,7 +52,7 @@
       </form>
 
       <div class="card" id="bloccoArrivo">
-        <a class="bottone" id="linkMappa" target="_blank" rel="noopener">Apri il punto su Google Maps</a>
+        <a class="bottone" id="linkMappa" target="_blank" rel="noopener">Apri il punto nelle Mappe</a>
       </div>
 
       <div class="card gps">

@@ -12,7 +12,9 @@ const PUBLIC_DIR = path.join(__dirname, 'public');
 const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, 'data');
 const DATA_FILE = path.join(DATA_DIR, 'stato.json');
 const GIOCO_FILE = path.join(__dirname, 'gioco.json');
+const FOTO_DIR = path.join(DATA_DIR, 'foto');
 const MAX_PUNTI_PERCORSO = 3000;
+const MAX_FOTO_BYTE = 10 * 1024 * 1024;
 
 // Il file del gioco viene riletto a ogni richiesta: si può modificare a gioco in corso.
 function gioco() {
@@ -72,7 +74,7 @@ function vistaSquadra(s) {
     fase: s.fase,
   };
   if (s.fase === 'arrivo') {
-    return { ...base, testo: g.arrivo.testo, arrivo: { lat: g.arrivo.lat, lng: g.arrivo.lng } };
+    return { ...base, testo: g.arrivo.testo, arrivo: g.arrivo };
   }
   return { ...base, testo: s.fase === 'missione' ? g.missioni[s.missioni[s.prova]] : g.domande[s.prova] };
 }
@@ -93,21 +95,44 @@ function json(res, codice, dati) {
   res.end(JSON.stringify(dati));
 }
 
-function leggiCorpo(req) {
+function leggiCorpo(req, limite) {
   return new Promise((resolve, reject) => {
-    let corpo = '';
+    const pezzi = [];
+    let lunghezza = 0;
     req.on('data', (c) => {
-      corpo += c;
-      if (corpo.length > 100000) req.destroy();
+      lunghezza += c.length;
+      if (lunghezza > limite) return req.destroy(new Error('Corpo troppo grande'));
+      pezzi.push(c);
     });
-    req.on('end', () => {
-      try {
-        resolve(corpo ? JSON.parse(corpo) : {});
-      } catch (e) {
-        reject(e);
-      }
-    });
+    req.on('end', () => resolve(Buffer.concat(pezzi)));
     req.on('error', reject);
+  });
+}
+
+// La foto arriva già rimpicciolita dal telefono, come JPEG grezzo.
+async function caricaFoto(req, res, parametri) {
+  const s = trovaPerToken(parametri.get('token'));
+  if (!s) return json(res, 404, { errore: 'Squadra non trovata' });
+  const dati = await leggiCorpo(req, MAX_FOTO_BYTE);
+  if (dati.length < 100 || dati[0] !== 0xff || dati[1] !== 0xd8) return json(res, 400, { errore: 'Foto non valida' });
+  // Come per le risposte: si accetta solo la foto della missione in corso.
+  if (s.fase !== 'missione' || Number(parametri.get('prova')) !== s.prova + 1) return json(res, 200, vistaSquadra(s));
+  const file = `${s.id}-${s.prova + 1}-${Date.now()}.jpg`;
+  fs.mkdirSync(FOTO_DIR, { recursive: true });
+  fs.writeFileSync(path.join(FOTO_DIR, file), dati);
+  s.foto.push({ prova: s.prova + 1, file, ora: Date.now() });
+  s.fase = 'domanda';
+  salva();
+  json(res, 200, vistaSquadra(s));
+}
+
+function serviFoto(req, res, parametri) {
+  if (parametri.get('password') !== ADMIN_PASSWORD) return json(res, 401, { errore: 'Password sbagliata' });
+  const file = path.basename(new URL(req.url, 'http://x').pathname);
+  fs.readFile(path.join(FOTO_DIR, file), (err, contenuto) => {
+    if (err) return json(res, 404, { errore: 'Foto non trovata' });
+    res.writeHead(200, { 'Content-Type': 'image/jpeg', 'Cache-Control': 'private, max-age=86400' });
+    res.end(contenuto);
   });
 }
 
@@ -155,6 +180,7 @@ const rotte = {
         fase: 'missione',
         missioni: scegliMissioni(g),
         risposte: [],
+        foto: [],
         ultimaPosizione: null,
         percorso: [],
       };
@@ -184,6 +210,7 @@ const rotte = {
     return [200, { ok: true }];
   },
 
+  // Chiude la missione senza foto, se proprio non si riesce a caricarla.
   'POST /api/missione-fatta': (corpo) => {
     const s = trovaPerToken(corpo.token);
     if (!s) return [404, { errore: 'Squadra non trovata' }];
@@ -229,6 +256,7 @@ const rotte = {
     s.prova = prova;
     s.fase = 'missione';
     s.risposte = s.risposte.filter((r) => r.prova <= prova);
+    s.foto = s.foto.filter((f) => f.prova <= prova);
     salva();
     return [200, vistaAdmin()];
   },
@@ -236,22 +264,27 @@ const rotte = {
   'POST /api/admin/elimina': (corpo) => {
     if (corpo.password !== ADMIN_PASSWORD) return [401, { errore: 'Password sbagliata' }];
     const chiave = Object.keys(stato.squadre).find((k) => stato.squadre[k].id === corpo.id);
-    if (chiave) delete stato.squadre[chiave];
+    if (chiave) {
+      stato.squadre[chiave].foto.forEach((f) => fs.rm(path.join(FOTO_DIR, f.file), { force: true }, () => {}));
+      delete stato.squadre[chiave];
+    }
     salva();
     return [200, vistaAdmin()];
   },
 };
 
 const server = http.createServer(async (req, res) => {
-  const percorso = new URL(req.url, 'http://x').pathname;
-  const rotta = rotte[`${req.method} ${percorso}`];
-  if (!rotta) {
-    if (req.method === 'GET') return serviFile(req, res);
-    return json(res, 404, { errore: 'non trovato' });
-  }
+  const { pathname: percorso, searchParams: parametri } = new URL(req.url, 'http://x');
   try {
-    const corpo = await leggiCorpo(req);
-    const [codice, dati] = rotta(corpo);
+    if (req.method === 'POST' && percorso === '/api/foto') return await caricaFoto(req, res, parametri);
+    if (req.method === 'GET' && percorso.startsWith('/foto/')) return serviFoto(req, res, parametri);
+    const rotta = rotte[`${req.method} ${percorso}`];
+    if (!rotta) {
+      if (req.method === 'GET') return serviFile(req, res);
+      return json(res, 404, { errore: 'non trovato' });
+    }
+    const corpo = (await leggiCorpo(req, 100000)).toString('utf8');
+    const [codice, dati] = rotta(corpo ? JSON.parse(corpo) : {});
     json(res, codice, dati);
   } catch (e) {
     console.error(e);

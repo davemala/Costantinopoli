@@ -52,6 +52,11 @@ node server.js
 
 ## Pubblicarla (Render, gratis)
 
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/davemala/Costantinopoli/tree/claude/scout-totopapaveromania-app-ss4zo9)
+
+Il pulsante crea tutto da solo: basta accedere con GitHub e scegliere la password dei capi.
+Oppure, a mano:
+
 La posizione funziona solo su **https**, quindi serve pubblicarla online.
 
 1. Su [render.com](https://render.com) → *New* → *Blueprint* → collega questo repository (usa `render.yaml`).

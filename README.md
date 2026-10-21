@@ -9,7 +9,7 @@ Web app per il gioco a missioni con le squadriglie. Nessuna dipendenza: basta No
    (anche da un altro telefono) ritrovano la loro partita.
 2. Il telefono chiede il permesso per la posizione: da lì, per **3 ore**, la posizione
    viene inviata ai capi ogni 20 secondi circa. La pagina tiene lo schermo acceso.
-3. Vedono la **missione 1** → premono *Missione completata* → compare la **domanda 1**
+3. Vedono la prima delle loro **3 missioni estratte a caso** → premono *Missione completata* → compare la **domanda 1**
    → inviano la risposta → compare la **missione 2**, e così via per 3 prove.
 4. Dopo l'ultima risposta compare il **punto di arrivo**, con il pulsante per aprirlo su Google Maps.
 
@@ -24,23 +24,17 @@ Web app per il gioco a missioni con le squadriglie. Nessuna dipendenza: basta No
 
 Tutto il contenuto sta in **`gioco.json`**:
 
-```json
-{
-  "titolo": "Totopapaveromania",
-  "durataTracciamentoOre": 3,
-  "prove": [
-    { "missione": "Testo della sfida 1", "domanda": "Testo della domanda 1" },
-    { "missione": "…", "domanda": "…" },
-    { "missione": "…", "domanda": "…" }
-  ],
-  "arrivo": { "testo": "Raggiungete…", "lat": 45.4642, "lng": 9.19 }
-}
-```
+- `missioni`: l'elenco di tutte le missioni possibili. Ogni squadriglia, quando entra, ne riceve
+  **3 a caso** (tante quante sono le domande), preferendo quelle date a meno squadriglie, così non
+  vanno tutte negli stessi posti.
+- `domande`: le 3 domande, uguali per tutti e sempre nello stesso ordine
+  (missione 1 → domanda 1 → missione 2 → domanda 2 → …).
+- `arrivo`: testo e coordinate del punto finale. Le coordinate si prendono da Google Maps:
+  tasto destro (o tieni premuto) sul punto → si copiano i due numeri.
 
-- Le coordinate dell'arrivo si prendono da Google Maps: tasto destro (o tieni premuto) sul punto → si copiano i due numeri.
-- Si possono aggiungere o togliere prove: il gioco segue quante ce ne sono nella lista.
-- Nei testi si può andare a capo con `\n`.
-- Le squadre vedono solo la prova corrente: le successive restano sul server finché non ci arrivano.
+Nei testi si può andare a capo con `\n`. Le squadriglie vedono solo la prova corrente.
+Le missioni vengono estratte quando la squadriglia entra: se cambiate l'elenco a gioco iniziato,
+le squadriglie già entrate tengono le posizioni nell'elenco che avevano.
 
 ## Provarla sul computer
 
@@ -66,6 +60,13 @@ senza visite. Quindi:
 
 Se serve che i dati sopravvivano, si può aggiungere un disco persistente (Render a pagamento,
 oppure Railway/Fly.io con un volume) e impostare `DATA_DIR` sul percorso del disco.
+
+## iPhone e Android
+
+Funziona dal browser su entrambi (Safari o Chrome su iPhone, Chrome su Android): non serve installare nulla.
+- Al primo ingresso il telefono chiede il permesso per la posizione: rispondere **Consenti**.
+- Se l'hanno negato, la pagina spiega dove riattivarlo (diverso per iPhone e Android).
+- Lo schermo resta acceso da solo su Android e su iPhone con iOS 16.4 o successivo.
 
 ## Limiti da sapere
 

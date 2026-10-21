@@ -38,6 +38,18 @@ function salva() {
   }, 500);
 }
 
+// Ogni squadriglia ha tante missioni quante sono le domande, estratte a caso.
+// Si preferiscono le missioni assegnate meno volte, così le squadriglie non vanno tutte negli stessi posti.
+function scegliMissioni(g) {
+  const usate = g.missioni.map(() => 0);
+  Object.values(stato.squadre).forEach((s) => s.missioni.forEach((i) => { usate[i] += 1; }));
+  return g.missioni
+    .map((_, i) => ({ i, peso: usate[i] + Math.random() }))
+    .sort((a, b) => a.peso - b.peso)
+    .slice(0, g.domande.length)
+    .map((x) => x.i);
+}
+
 function normalizza(nome) {
   return nome.trim().toLowerCase().replace(/\s+/g, ' ');
 }
@@ -49,7 +61,7 @@ function trovaPerToken(token) {
 // Quello che vede la squadra: solo la prova corrente, mai quelle successive.
 function vistaSquadra(s) {
   const g = gioco();
-  const totale = g.prove.length;
+  const totale = g.domande.length;
   const base = {
     nome: s.nome,
     token: s.token,
@@ -62,8 +74,7 @@ function vistaSquadra(s) {
   if (s.fase === 'arrivo') {
     return { ...base, testo: g.arrivo.testo, arrivo: { lat: g.arrivo.lat, lng: g.arrivo.lng } };
   }
-  const p = g.prove[s.prova];
-  return { ...base, testo: s.fase === 'missione' ? p.missione : p.domanda };
+  return { ...base, testo: s.fase === 'missione' ? g.missioni[s.missioni[s.prova]] : g.domande[s.prova] };
 }
 
 function vistaAdmin() {
@@ -133,6 +144,8 @@ const rotte = {
     const chiave = normalizza(nome);
     let s = stato.squadre[chiave];
     if (!s) {
+      const g = gioco();
+      if (g.missioni.length < g.domande.length) return [500, { errore: 'In gioco.json servono almeno tante missioni quante domande' }];
       s = {
         id: crypto.randomBytes(4).toString('hex'),
         nome,
@@ -140,6 +153,7 @@ const rotte = {
         creata: Date.now(),
         prova: 0,
         fase: 'missione',
+        missioni: scegliMissioni(g),
         risposte: [],
         ultimaPosizione: null,
         percorso: [],
@@ -188,9 +202,15 @@ const rotte = {
     // Il numero di prova inviato evita doppie risposte se due telefoni della stessa squadra rispondono insieme.
     if (s.fase !== 'domanda' || Number(corpo.prova) !== s.prova + 1) return [200, vistaSquadra(s)];
     const g = gioco();
-    s.risposte.push({ prova: s.prova + 1, domanda: g.prove[s.prova].domanda, risposta, ora: Date.now() });
+    s.risposte.push({
+      prova: s.prova + 1,
+      missione: g.missioni[s.missioni[s.prova]],
+      domanda: g.domande[s.prova],
+      risposta,
+      ora: Date.now(),
+    });
     s.prova += 1;
-    s.fase = s.prova >= g.prove.length ? 'arrivo' : 'missione';
+    s.fase = s.prova >= g.domande.length ? 'arrivo' : 'missione';
     salva();
     return [200, vistaSquadra(s)];
   },
@@ -205,7 +225,7 @@ const rotte = {
     if (corpo.password !== ADMIN_PASSWORD) return [401, { errore: 'Password sbagliata' }];
     const s = Object.values(stato.squadre).find((x) => x.id === corpo.id);
     if (!s) return [404, { errore: 'Squadra non trovata' }];
-    const prova = Math.max(0, Math.min(Number(corpo.prova) || 0, gioco().prove.length - 1));
+    const prova = Math.max(0, Math.min(Number(corpo.prova) || 0, gioco().domande.length - 1));
     s.prova = prova;
     s.fase = 'missione';
     s.risposte = s.risposte.filter((r) => r.prova <= prova);

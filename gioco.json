@@ -1,19 +1,20 @@
 {
   "titolo": "Totopapaveromania",
   "durataTracciamentoOre": 3,
-  "prove": [
-    {
-      "missione": "MISSIONE 1 — (da inserire) Descrivi qui la prima sfida.",
-      "domanda": "DOMANDA 1 — (da inserire) Cosa avete scoperto durante la prima missione?"
-    },
-    {
-      "missione": "MISSIONE 2 — (da inserire) Descrivi qui la seconda sfida.",
-      "domanda": "DOMANDA 2 — (da inserire) Scrivi qui la seconda domanda."
-    },
-    {
-      "missione": "MISSIONE 3 — (da inserire) Descrivi qui la terza sfida.",
-      "domanda": "DOMANDA 3 — (da inserire) Scrivi qui la terza domanda."
-    }
+  "missioni": [
+    "Dovete trovare una foglia di fico.",
+    "Raccogliete 20 castagne.",
+    "Fate un selfie con un germano reale.",
+    "Trovate una foglia di ginkgo biloba.",
+    "Procuratevi una bustina di zucchero.",
+    "Procuratevi un tovagliolo di una gelateria.",
+    "Fate un selfie con un cantiere.\nBonus: con un umarell che lo guarda!",
+    "Fate un selfie con una suora.\nBonus: una suora delle Minime dell'Addolorata!"
+  ],
+  "domande": [
+    "Pensate a una regola per far funzionare meglio la squadriglia.",
+    "Pensate a una regola che vi ponete per mantenere un buono stile.",
+    "Qual è una regola che sentite che il reparto ha bisogno?"
   ],
   "arrivo": {
     "testo": "Complimenti! Ora raggiungete il punto di arrivo (da inserire).",

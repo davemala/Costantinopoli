@@ -1,6 +1,11 @@
 const INVIO_OGNI_MS = 20000; // ogni quanto mandare la posizione al server
 const $ = (id) => document.getElementById(id);
 
+const IPHONE = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const AIUTO_POSIZIONE = IPHONE
+  ? 'Posizione negata. Andate in Impostazioni → Privacy e sicurezza → Localizzazione: attivatela, poi in "Siti web di Safari" (o Chrome) scegliete "Mentre usi l\'app" con posizione esatta. Poi ricaricate la pagina.'
+  : 'Posizione negata. Toccate il lucchetto accanto all\'indirizzo → Autorizzazioni → Posizione → Consenti, controllate che la posizione del telefono sia accesa, poi ricaricate la pagina.';
+
 let squadra = null;
 let watchId = null;
 let ultimoInvio = 0;
@@ -68,9 +73,7 @@ function avviaPosizione() {
   if (!('geolocation' in navigator)) return statoGps('Questo telefono non supporta la posizione', false);
 
   watchId = navigator.geolocation.watchPosition(inviaPosizione, (err) => {
-    statoGps(err.code === 1
-      ? 'Posizione negata: attivatela nelle impostazioni del browser e ricaricate la pagina'
-      : 'Posizione non disponibile, riprovo…', false);
+    statoGps(err.code === 1 ? AIUTO_POSIZIONE : 'Posizione non disponibile, riprovo…', false);
   }, { enableHighAccuracy: true, maximumAge: 10000, timeout: 30000 });
   tieniSchermoAcceso();
 }
@@ -125,7 +128,7 @@ document.addEventListener('visibilitychange', () => {
 $('formIngresso').addEventListener('submit', async (e) => {
   e.preventDefault();
   $('erroreIngresso').textContent = '';
-  const btn = e.submitter;
+  const btn = e.currentTarget.querySelector('button');
   btn.disabled = true;
   try {
     mostra(await chiama('/api/entra', { nome: $('campoNome').value }));
@@ -151,7 +154,7 @@ $('btnFatta').addEventListener('click', async () => {
 $('bloccoDomanda').addEventListener('submit', async (e) => {
   e.preventDefault();
   $('erroreRisposta').textContent = '';
-  const btn = e.submitter;
+  const btn = e.currentTarget.querySelector('button');
   btn.disabled = true;
   try {
     mostra(await chiama('/api/rispondi', {

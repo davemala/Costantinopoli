@@ -69,7 +69,7 @@ function disegnaMappa(dati) {
     const p = [s.ultimaPosizione.lat, s.ultimaPosizione.lng];
     confini.push(p);
     L.circleMarker(p, { radius: 9, color: '#fff', weight: 2, fillColor: colore, fillOpacity: 1 })
-      .bindTooltip(`<b>${esc(s.nome)}</b><br>${descriviFase(s, dati.gioco.prove.length)}<br>${fa(s.ultimaPosizione.ora, dati.ora)}`,
+      .bindTooltip(`<b>${esc(s.nome)}</b><br>${descriviFase(s, dati.gioco.domande.length)}<br>${fa(s.ultimaPosizione.ora, dati.ora)}`,
         { permanent: true, direction: 'right', offset: [10, 0] })
       .addTo(livelli);
   });
@@ -81,7 +81,7 @@ function disegnaMappa(dati) {
 }
 
 function disegnaSchede(dati) {
-  const totale = dati.gioco.prove.length;
+  const totale = dati.gioco.domande.length;
   const chiave = JSON.stringify(dati.squadre.map((s) => [s.id, s.prova, s.fase, s.risposte.length]));
   if (chiave !== chiaveSchede) {
     chiaveSchede = chiave;
@@ -89,13 +89,14 @@ function disegnaSchede(dati) {
       <div class="card" data-id="${s.id}">
         <div class="sq-titolo"><span class="colore" style="background:${COLORI[i % COLORI.length]}"></span>${esc(s.nome)}</div>
         <div class="meta">${descriviFase(s, totale)} · entrata alle ${ora(s.creata)}<br><span class="vista"></span></div>
+        <div class="missioni">${s.missioni.map((m, n) => `<div class="${n < s.prova || s.fase === 'arrivo' ? 'fatta' : ''}">${n + 1}. ${esc(dati.gioco.missioni[m])}</div>`).join('')}</div>
         ${s.risposte.length ? s.risposte.map((r) => `
           <div class="risposta">
             <div class="d">Domanda ${r.prova} · ${ora(r.ora)} — ${esc(r.domanda)}</div>
             <div class="r">${esc(r.risposta)}</div>
           </div>`).join('') : '<div class="risposta d">Nessuna risposta ancora</div>'}
         <div class="azioni">
-          <select>${dati.gioco.prove.map((_, n) => `<option value="${n}">Missione ${n + 1}</option>`).join('')}</select>
+          <select>${s.missioni.map((_, n) => `<option value="${n}">Missione ${n + 1}</option>`).join('')}</select>
           <button class="secondario" data-azione="riporta">Riporta</button>
           <button class="secondario" data-azione="elimina">Elimina</button>
         </div>

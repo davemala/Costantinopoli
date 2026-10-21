@@ -126,6 +126,13 @@ a.bottone {
   margin-bottom: 12px;
 }
 
+.scelta-foto { display: flex; gap: 10px; }
+.scelta-foto .bottone-foto { flex: 1; }
+
+.aiuto { margin-top: 16px; }
+.aiuto ol { padding-left: 20px; }
+.aiuto li { margin-bottom: 8px; }
+
 .anteprima {
   display: block;
   width: 100%;

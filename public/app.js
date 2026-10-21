@@ -3,9 +3,7 @@ const LATO_MAX_FOTO = 1600; // le foto si rimpiccioliscono sul telefono prima de
 const $ = (id) => document.getElementById(id);
 
 const IPHONE = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-const AIUTO_POSIZIONE = IPHONE
-  ? 'Posizione negata. Andate in Impostazioni → Privacy e sicurezza → Localizzazione: attivatela, poi in "Siti web di Safari" (o Chrome) scegliete "Mentre usi l\'app" con posizione esatta. Poi ricaricate la pagina.'
-  : 'Posizione negata. Toccate il lucchetto accanto all\'indirizzo → Autorizzazioni → Posizione → Consenti, controllate che la posizione del telefono sia accesa, poi ricaricate la pagina.';
+let senzaPosizione = false; // la squadra ha scelto di giocare comunque senza posizione
 
 let squadra = null;
 let watchId = null;
@@ -35,7 +33,6 @@ function mostra(s) {
   squadra = s;
   scriviToken(s.token);
   $('schermoIngresso').classList.add('nascosto');
-  $('schermoGioco').classList.remove('nascosto');
   $('titolo').textContent = s.titolo;
   $('nomeSq').textContent = s.nome;
 
@@ -57,10 +54,79 @@ function mostra(s) {
       || (IPHONE ? `https://maps.apple.com/?ll=${lat},${lng}&q=Arrivo` : `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`);
   }
 
-  avviaPosizione();
+  controllaPosizione();
 }
 
 // ---------- Posizione ----------
+
+function mostraGioco() {
+  $('schermoPosizione').classList.add('nascosto');
+  $('schermoGioco').classList.remove('nascosto');
+}
+
+function chiediPosizione(conAiuto) {
+  $('schermoGioco').classList.add('nascosto');
+  $('schermoPosizione').classList.remove('nascosto');
+  $('aiutoPosizione').classList.toggle('nascosto', !conAiuto);
+}
+
+// Se il permesso c'è già si parte subito, altrimenti si mostra il pulsante per chiederlo.
+async function controllaPosizione() {
+  if (watchId !== null || senzaPosizione || tracciamentoScaduto() || !('geolocation' in navigator)) {
+    if (tracciamentoScaduto()) statoGps('Tracciamento concluso', null);
+    else if (!('geolocation' in navigator)) statoGps('Questo telefono non supporta la posizione', false);
+    return mostraGioco();
+  }
+  let permesso = 'prompt';
+  try {
+    permesso = (await navigator.permissions.query({ name: 'geolocation' })).state;
+  } catch (e) { /* browser senza Permissions API: si chiede col pulsante */ }
+  if (permesso === 'granted') {
+    avviaPosizione();
+    mostraGioco();
+  } else {
+    chiediPosizione(permesso === 'denied');
+  }
+}
+
+$('aiutoIphone').classList.toggle('nascosto', !IPHONE);
+$('aiutoAndroid').classList.toggle('nascosto', IPHONE);
+
+$('btnPosizione').addEventListener('click', () => {
+  const btn = $('btnPosizione');
+  btn.disabled = true;
+  btn.textContent = 'Attendo il telefono…';
+  let finito = false;
+  const fine = () => {
+    if (finito) return false;
+    finito = true;
+    btn.disabled = false;
+    btn.textContent = '📍 Attiva la posizione';
+    return true;
+  };
+  // Se il popup resta senza risposta (o il telefono non lo mostra) non si resta bloccati.
+  setTimeout(() => fine() && chiediPosizione(true), 25000);
+  // getCurrentPosition dentro il tocco: è questo che fa comparire il popup di iPhone.
+  navigator.geolocation.getCurrentPosition((pos) => {
+    fine();
+    ultimoInvio = 0;
+    inviaPosizione(pos);
+    avviaPosizione();
+    mostraGioco();
+  }, (err) => {
+    if (!fine()) return;
+    chiediPosizione(true);
+    $('aiutoPosizione').querySelector('.errore').textContent = 'Il telefono non ha dato la posizione.';
+    if (err.code !== 1) $('aiutoPosizione').querySelector('.errore').textContent = 'Il telefono non trova la posizione: controllate che sia accesa e riprovate (meglio all\'aperto).';
+  }, { enableHighAccuracy: true, maximumAge: 0, timeout: 20000 });
+});
+
+$('btnSenzaPosizione').addEventListener('click', () => {
+  if (!confirm('Senza posizione i capi non sapranno dove siete. Continuare lo stesso?')) return;
+  senzaPosizione = true;
+  statoGps('Posizione non attiva', false);
+  mostraGioco();
+});
 
 function statoGps(testo, ok) {
   $('statoGps').textContent = testo;
@@ -77,7 +143,11 @@ function avviaPosizione() {
   if (!('geolocation' in navigator)) return statoGps('Questo telefono non supporta la posizione', false);
 
   watchId = navigator.geolocation.watchPosition(inviaPosizione, (err) => {
-    statoGps(err.code === 1 ? AIUTO_POSIZIONE : 'Posizione non disponibile, riprovo…', false);
+    if (err.code === 1) { // permesso tolto a gioco iniziato: si torna al pulsante
+      fermaPosizione();
+      return chiediPosizione(true);
+    }
+    statoGps('Posizione non disponibile, riprovo…', false);
   }, { enableHighAccuracy: true, maximumAge: 10000, timeout: 30000 });
   tieniSchermoAcceso();
 }
@@ -149,7 +219,8 @@ let fotoScelta = null;
 
 function azzeraFoto() {
   fotoScelta = null;
-  $('campoFoto').value = '';
+  $('campoFotoScatta').value = '';
+  $('campoFotoGalleria').value = '';
   $('anteprima').classList.add('nascosto');
   $('anteprima').removeAttribute('src');
   $('btnInviaFoto').classList.add('nascosto');
@@ -178,8 +249,8 @@ function rimpicciolisci(file) {
   });
 }
 
-$('campoFoto').addEventListener('change', async () => {
-  const file = $('campoFoto').files[0];
+async function quandoScegliFoto(e) {
+  const file = e.target.files[0];
   if (!file) return;
   $('erroreFoto').textContent = '';
   try {
@@ -191,7 +262,9 @@ $('campoFoto').addEventListener('change', async () => {
     azzeraFoto();
     $('erroreFoto').textContent = err.message;
   }
-});
+}
+$('campoFotoScatta').addEventListener('change', quandoScegliFoto);
+$('campoFotoGalleria').addEventListener('change', quandoScegliFoto);
 
 $('btnInviaFoto').addEventListener('click', async () => {
   if (!fotoScelta) return;

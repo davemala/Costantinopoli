@@ -76,8 +76,12 @@ oppure Railway/Fly.io con un volume) e impostare `DATA_DIR` sul percorso del dis
 ## iPhone e Android
 
 Funziona dal browser su entrambi (Safari o Chrome su iPhone, Chrome su Android): non serve installare nulla.
-- Al primo ingresso il telefono chiede il permesso per la posizione: rispondere **Consenti**.
-- Se l'hanno negato, la pagina spiega dove riattivarlo (diverso per iPhone e Android).
+- Dopo il nome compare il pulsante **📍 Attiva la posizione**: toccandolo il telefono mostra il popup,
+  a cui rispondere **Consenti** (su iPhone il popup compare in modo affidabile solo dopo un tocco).
+- Se la posizione è negata o spenta, la pagina spiega passo passo dove riattivarla (diverso per iPhone e
+  Android). In extremis c'è *"Continua senza posizione"*: la squadriglia gioca, ma sulla mappa dei capi
+  resta in rosso.
+- Per le foto ci sono due pulsanti: **Scatta la foto** (apre subito la fotocamera) e **Dalla galleria**.
 - Lo schermo resta acceso da solo su Android e su iPhone con iOS 16.4 o successivo.
 
 ## Limiti da sapere

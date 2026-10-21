@@ -26,6 +26,37 @@
       </form>
     </section>
 
+    <!-- Posizione: il popup del telefono compare in modo affidabile (soprattutto su iPhone) solo dopo un tocco -->
+    <section id="schermoPosizione" class="card nascosto">
+      <span class="etichetta">Prima di iniziare</span>
+      <p>Per giocare dovete condividere la posizione con i capi.
+        Premete il pulsante e, quando il telefono lo chiede, rispondete <strong>Consenti</strong>.</p>
+      <button id="btnPosizione">📍 Attiva la posizione</button>
+      <div id="aiutoPosizione" class="aiuto nascosto">
+        <p class="errore">Il telefono non ha dato la posizione.</p>
+        <div id="aiutoIphone">
+          <p><strong>Su iPhone</strong> controllate queste due cose:</p>
+          <ol>
+            <li>Aprite <strong>Impostazioni → Privacy e sicurezza → Localizzazione</strong>: deve essere attiva.
+              Nella stessa pagina scorrete fino a <strong>Siti web di Safari</strong> (o <strong>Chrome</strong>, se usate Chrome)
+              e scegliete <strong>"Chiedi la prossima volta"</strong> o <strong>"Mentre usi l'app"</strong>, con <strong>Posizione esatta</strong> attiva.</li>
+            <li>Tornate qui: in Safari toccate <strong>aA</strong> (o l'icona a sinistra dell'indirizzo) → <strong>Impostazioni sito web</strong>
+              → <strong>Posizione</strong> → <strong>Consenti</strong>.</li>
+          </ol>
+        </div>
+        <div id="aiutoAndroid">
+          <p><strong>Su Android</strong> controllate queste due cose:</p>
+          <ol>
+            <li>Tirate giù la tendina in alto e accendete <strong>Posizione</strong> (o GPS).</li>
+            <li>Toccate l'icona a sinistra dell'indirizzo → <strong>Autorizzazioni</strong> (o Impostazioni sito)
+              → <strong>Posizione</strong> → <strong>Consenti</strong>.</li>
+          </ol>
+        </div>
+        <p>Poi premete di nuovo <strong>Attiva la posizione</strong>.</p>
+        <button id="btnSenzaPosizione" class="link">Continua senza posizione (avvisate i capi)</button>
+      </div>
+    </section>
+
     <!-- Gioco -->
     <section id="schermoGioco" class="nascosto">
       <div class="card">
@@ -36,8 +67,13 @@
 
       <div class="card" id="bloccoMissione">
         <p><strong>Missione completata?</strong> Caricate una foto come prova.</p>
-        <label class="bottone-foto" for="campoFoto">📷 Scatta o scegli la foto</label>
-        <input id="campoFoto" type="file" accept="image/*" class="file-nascosto">
+        <div class="scelta-foto">
+          <label class="bottone-foto" for="campoFotoScatta">📷 Scatta la foto</label>
+          <label class="bottone-foto" for="campoFotoGalleria">🖼️ Dalla galleria</label>
+        </div>
+        <!-- capture apre direttamente la fotocamera: su Android senza capture si vede solo la galleria -->
+        <input id="campoFotoScatta" type="file" accept="image/*" capture="environment" class="file-nascosto">
+        <input id="campoFotoGalleria" type="file" accept="image/*" class="file-nascosto">
         <img id="anteprima" class="anteprima nascosto" alt="Anteprima della foto">
         <div class="errore" id="erroreFoto"></div>
         <button id="btnInviaFoto" class="nascosto">Invia la foto e vai avanti ✔</button>

@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Totopapaveromania · Capi</title>
+  <link rel="stylesheet" href="stile.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <style>
+    main { max-width: 1200px; }
+    #mappa { height: 55vh; min-height: 320px; border-radius: 14px; margin-bottom: 16px; }
+    .griglia { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+    .sq-titolo { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 1.1rem; }
+    .colore { width: 14px; height: 14px; border-radius: 50%; flex: none; }
+    .meta { color: var(--grigio); font-size: .9rem; margin: 4px 0 10px; }
+    .vecchia { color: var(--rosso); }
+    .risposta { border-top: 1px solid #eee5cf; padding: 8px 0; }
+    .risposta .d { font-size: .85rem; color: var(--grigio); }
+    .risposta .r { white-space: pre-wrap; }
+    .azioni { display: flex; gap: 8px; margin-top: 10px; }
+    .azioni button { padding: 8px; font-size: .9rem; }
+    .azioni select { font: inherit; padding: 8px; border-radius: 10px; border: 2px solid #d7d0bd; }
+    #formLogin { max-width: 400px; margin: 40px auto; }
+    .barra { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; color: var(--grigio); font-size: .9rem; gap: 12px; flex-wrap: wrap; }
+    .barra label { display: flex; gap: 6px; align-items: center; }
+    .barra input { width: auto; margin: 0; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Pannello capi</h1>
+    <span class="sq" id="aggiornato"></span>
+  </header>
+
+  <main>
+    <form id="formLogin" class="card">
+      <span class="etichetta">Accesso capi</span>
+      <input id="campoPassword" type="password" placeholder="Password" required>
+      <div class="errore" id="erroreLogin"></div>
+      <button type="submit">Entra</button>
+    </form>
+
+    <section id="pannello" class="nascosto">
+      <div class="barra">
+        <span id="riepilogo"></span>
+        <label><input type="checkbox" id="mostraPercorsi" checked> Mostra percorsi</label>
+      </div>
+      <div id="mappa"></div>
+      <div class="griglia" id="squadre"></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>

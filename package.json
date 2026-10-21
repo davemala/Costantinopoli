@@ -1,0 +1,13 @@
+{
+  "name": "totopapaveromania",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Gioco a missioni per le squadriglie scout, con posizione in tempo reale per i capi",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

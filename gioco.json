@@ -1,0 +1,23 @@
+{
+  "titolo": "Totopapaveromania",
+  "durataTracciamentoOre": 3,
+  "prove": [
+    {
+      "missione": "MISSIONE 1 — (da inserire) Descrivi qui la prima sfida.",
+      "domanda": "DOMANDA 1 — (da inserire) Cosa avete scoperto durante la prima missione?"
+    },
+    {
+      "missione": "MISSIONE 2 — (da inserire) Descrivi qui la seconda sfida.",
+      "domanda": "DOMANDA 2 — (da inserire) Scrivi qui la seconda domanda."
+    },
+    {
+      "missione": "MISSIONE 3 — (da inserire) Descrivi qui la terza sfida.",
+      "domanda": "DOMANDA 3 — (da inserire) Scrivi qui la terza domanda."
+    }
+  ],
+  "arrivo": {
+    "testo": "Complimenti! Ora raggiungete il punto di arrivo (da inserire).",
+    "lat": 45.4642,
+    "lng": 9.19
+  }
+}

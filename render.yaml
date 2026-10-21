@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: totopapaveromania
+    runtime: node
+    plan: free
+    buildCommand: "true"
+    startCommand: node server.js
+    envVars:
+      - key: ADMIN_PASSWORD
+        sync: false

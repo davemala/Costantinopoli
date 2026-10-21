@@ -1,0 +1,113 @@
+:root {
+  --verde: #2f6b3a;
+  --verde-scuro: #1f4a28;
+  --rosso: #c8372d;
+  --sabbia: #f6f1e4;
+  --carta: #fffdf7;
+  --testo: #222;
+  --grigio: #6b6b6b;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: var(--sabbia);
+  color: var(--testo);
+  line-height: 1.45;
+}
+
+header {
+  background: var(--verde);
+  color: #fff;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+header h1 { font-size: 1.2rem; margin: 0; }
+header .sq { font-size: .9rem; opacity: .9; }
+
+main { max-width: 640px; margin: 0 auto; padding: 16px; }
+
+.card {
+  background: var(--carta);
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.08);
+  margin-bottom: 16px;
+}
+
+.etichetta {
+  display: inline-block;
+  font-size: .8rem;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: var(--verde);
+  margin-bottom: 8px;
+}
+
+.testo { font-size: 1.15rem; white-space: pre-wrap; }
+
+input, textarea {
+  width: 100%;
+  font: inherit;
+  font-size: 1.05rem;
+  padding: 12px;
+  border: 2px solid #d7d0bd;
+  border-radius: 10px;
+  background: #fff;
+  margin: 8px 0 14px;
+}
+textarea { min-height: 120px; resize: vertical; }
+input:focus, textarea:focus { outline: none; border-color: var(--verde); }
+
+button {
+  width: 100%;
+  font: inherit;
+  font-weight: 700;
+  font-size: 1.05rem;
+  padding: 14px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--verde);
+  color: #fff;
+  cursor: pointer;
+}
+button:active { background: var(--verde-scuro); }
+button:disabled { opacity: .5; }
+button.secondario { background: #e7e1cf; color: var(--testo); }
+
+.errore { color: var(--rosso); font-weight: 600; min-height: 1.2em; }
+
+.gps {
+  font-size: .85rem;
+  color: var(--grigio);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pallino { width: 10px; height: 10px; border-radius: 50%; background: #bbb; flex: none; }
+.pallino.ok { background: #2fa84f; }
+.pallino.ko { background: var(--rosso); }
+
+.progresso { display: flex; gap: 6px; margin-bottom: 14px; }
+.progresso span { flex: 1; height: 6px; border-radius: 3px; background: #ddd5bf; }
+.progresso span.fatto { background: var(--verde); }
+
+.nascosto { display: none !important; }
+
+a.bottone {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  padding: 14px;
+  border-radius: 10px;
+  background: var(--rosso);
+  color: #fff;
+  font-weight: 700;
+  margin-top: 12px;
+}

@@ -1,64 +1,76 @@
-# Margherita & Francescone — Il Quiz degli Sposi
+# Totopapaveromania
 
-Pagina singola, senza dipendenze: si apre `index.html` e funziona (anche offline).
+Web app per il gioco a missioni con le squadriglie. Nessuna dipendenza: basta Node 18+.
 
-## Come si gioca
+## Come funziona
 
-Due schede in alto, **Margherita** e **Francescone**. La scheda con la prova è
-sempre quella di **chi fa la domanda**, cioè di chi tiene il telefono in mano:
-così chi deve indovinare non vede la soluzione, il mimo o la foto.
+**Squadre** (`/`)
+1. Scrivono il nome della squadriglia ed entrano. Se rientrano con lo stesso nome
+   (anche da un altro telefono) ritrovano la loro partita.
+2. Il telefono chiede il permesso per la posizione: da lì, per **3 ore**, la posizione
+   viene inviata ai capi ogni 20 secondi circa. La pagina tiene lo schermo acceso.
+3. Vedono la **missione 1** → premono *Missione completata* → compare la **domanda 1**
+   → inviano la risposta → compare la **missione 2**, e così via per 3 prove.
+4. Dopo l'ultima risposta compare il **punto di arrivo**, con il pulsante per aprirlo su Google Maps.
 
-Se l'altro indovina si preme **"Ha indovinato! Avanti →"** e la prova successiva
-compare da sola nella scheda dell'altro (il telefono passa di mano). Alla fine
-arriva la schermata di successo con i coriandoli e i punteggi.
+**Capi** (`/admin`, password nella variabile `ADMIN_PASSWORD`, di default `capi`)
+- Mappa con l'ultima posizione di ogni squadra, a che punto sono e (opzionale) il percorso fatto.
+- Le risposte di ogni squadra alle domande, con l'orario.
+- *Riporta*: rimanda una squadra all'inizio di una missione (es. se hanno premuto "completata" per sbaglio).
+- *Elimina*: cancella una squadra (es. nomi di prova).
+- Si aggiorna da sola ogni 10 secondi. In rosso le squadre senza posizione da più di 5 minuti.
 
-Parte **Francescone**: è il primo a dover indovinare, quindi il telefono comincia
-in mano a Margherita. Da lì cambia mano a ogni prova, senza mai due turni di fila
-alla stessa persona.
+## Inserire missioni, domande e punto di arrivo
 
-| # | Chi ha il telefono | Chi indovina | Prova |
-|---|--------------------|--------------|-------|
-| 1 | Margherita | Francescone | Mimo → *Clarinetto* |
-| 2 | Francescone | Margherita | "Come si chiama il nostro gruppo?" → *Costantinopoli* |
-| 3 | Margherita | Francescone | Indovinello in versi → *Margherita* |
-| 4 | Francescone | Margherita | Foto del mezzo chilo di stracciatella → *una schiscetta* |
-| 5 | Margherita | Francescone | "Il vostro prof disperso sulle Alpi?" → *Dell'Amico* |
+Tutto il contenuto sta in **`gioco.json`**:
 
-## La foto della quarta prova
-
-È già nel repository, in `foto/stracciatella.jpg`. Per sostituirla basta
-rimpiazzare il file mantenendo lo stesso nome, oppure cambiare il campo `img`
-della domanda. Se il file manca, al suo posto la pagina mostra un riquadro
-tratteggiato con il promemoria.
-
-## Come modificare le domande
-
-Tutto sta nella lista `QUIZ` dentro `index.html`:
-
-```js
-{ indovina:"margherita", tipo:"testo", q:"La domanda...", a:"La risposta" }
+```json
+{
+  "titolo": "Totopapaveromania",
+  "durataTracciamentoOre": 3,
+  "prove": [
+    { "missione": "Testo della sfida 1", "domanda": "Testo della domanda 1" },
+    { "missione": "…", "domanda": "…" },
+    { "missione": "…", "domanda": "…" }
+  ],
+  "arrivo": { "testo": "Raggiungete…", "lat": 45.4642, "lng": 9.19 }
+}
 ```
 
-- `indovina` → chi deve **indovinare** (`"margherita"` o `"francescone"`); la scheda
-  compare automaticamente all'altro
-- `tipo` → `"testo"` (domanda letta ad alta voce), `"mimo"` (la parola resta sfocata
-  finché non la tocchi, così non la vede nessuno per sbaglio), `"foto"` (aggiungi
-  anche `img:"foto/nome.jpg"`), `"poesia"` (versi da leggere, gli a capo si scrivono con `\n`)
-- `q` → il testo della prova, `a` → la risposta giusta
+- Le coordinate dell'arrivo si prendono da Google Maps: tasto destro (o tieni premuto) sul punto → si copiano i due numeri.
+- Si possono aggiungere o togliere prove: il gioco segue quante ce ne sono nella lista.
+- Nei testi si può andare a capo con `\n`.
+- Le squadre vedono solo la prova corrente: le successive restano sul server finché non ci arrivano.
 
-Si possono aggiungere o togliere prove liberamente: contatore, barra di
-avanzamento e turni si adattano da soli.
+## Provarla sul computer
 
-## Pubblicare su GitHub Pages
+```bash
+node server.js
+# squadre: http://localhost:3000   capi: http://localhost:3000/admin
+```
 
-1. Push del repository su GitHub
-2. **Settings → Pages → Source: Deploy from a branch**
-3. Branch: quello con questi file, cartella `/ (root)` → **Save**
-4. Dopo un minuto la pagina è online su `https://<utente>.github.io/<repository>/`
+## Pubblicarla (Render, gratis)
 
-## Note
+La posizione funziona solo su **https**, quindi serve pubblicarla online.
 
-- L'avanzamento resta salvato nel browser (`localStorage`): se la pagina si ricarica
-  il gioco riprende dalla prova giusta. "Ricomincia da capo" azzera tutto.
-- "Mostra la risposta" serve a chi fa la domanda per verificare; sui mimi non c'è,
-  la parola da mimare è già lì.
+1. Su [render.com](https://render.com) → *New* → *Blueprint* → collega questo repository (usa `render.yaml`).
+2. Quando lo chiede, scegli la password dei capi (`ADMIN_PASSWORD`).
+3. Dopo qualche minuto avrai un indirizzo tipo `https://totopapaveromania.onrender.com`: quello va dato ai ragazzi, `/admin` ai capi.
+
+⚠️ Sul piano gratuito i dati (squadre, posizioni, risposte) stanno su un disco temporaneo:
+**si perdono se il servizio si riavvia o si ripubblica**, e il servizio si addormenta dopo 15 minuti
+senza visite. Quindi:
+- aprite la pagina qualche minuto prima di iniziare (il primo caricamento dopo la pausa è lento);
+- non modificate il repository durante il gioco (ogni modifica ripubblica e azzera tutto);
+- finché le squadre giocano, le posizioni inviate lo tengono sveglio.
+
+Se serve che i dati sopravvivano, si può aggiungere un disco persistente (Render a pagamento,
+oppure Railway/Fly.io con un volume) e impostare `DATA_DIR` sul percorso del disco.
+
+## Limiti da sapere
+
+- I browser inviano la posizione solo **con la pagina aperta**: se il telefono va in tasca a
+  schermo spento o si cambia app, la posizione si ferma finché non si riapre la pagina.
+  Conviene dire ai ragazzi di tenere la pagina aperta (lo schermo resta acceso da solo su Android
+  e iPhone recenti) e magari portare un powerbank.
+- Chiunque scriva il nome di una squadra esistente entra in quella squadra.

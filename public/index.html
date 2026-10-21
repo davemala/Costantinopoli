@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#2f6b3a">
+  <title>Totopapaveromania</title>
+  <link rel="stylesheet" href="stile.css">
+</head>
+<body>
+  <header>
+    <h1 id="titolo">Totopapaveromania</h1>
+    <span class="sq" id="nomeSq"></span>
+  </header>
+
+  <main>
+    <!-- Ingresso -->
+    <section id="schermoIngresso" class="card">
+      <span class="etichetta">Benvenuti</span>
+      <p>Scrivete il nome della vostra squadriglia per iniziare. Vi verrà chiesto di
+        attivare la posizione: tenetela accesa e lasciate questa pagina aperta.</p>
+      <form id="formIngresso">
+        <input id="campoNome" placeholder="Nome della squadriglia" autocomplete="off" maxlength="40" required>
+        <div class="errore" id="erroreIngresso"></div>
+        <button type="submit">Entra</button>
+      </form>
+    </section>
+
+    <!-- Gioco -->
+    <section id="schermoGioco" class="nascosto">
+      <div class="card">
+        <div class="progresso" id="progresso"></div>
+        <span class="etichetta" id="etichettaFase"></span>
+        <div class="testo" id="testoFase"></div>
+      </div>
+
+      <div class="card" id="bloccoMissione">
+        <button id="btnFatta">Missione completata ✔</button>
+      </div>
+
+      <form class="card" id="bloccoDomanda">
+        <label for="campoRisposta"><strong>La vostra risposta</strong></label>
+        <textarea id="campoRisposta" required></textarea>
+        <div class="errore" id="erroreRisposta"></div>
+        <button type="submit">Invia risposta</button>
+      </form>
+
+      <div class="card" id="bloccoArrivo">
+        <a class="bottone" id="linkMappa" target="_blank" rel="noopener">Apri il punto su Google Maps</a>
+      </div>
+
+      <div class="card gps">
+        <span class="pallino" id="pallinoGps"></span>
+        <span id="statoGps">Posizione non ancora attiva</span>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -8,6 +8,12 @@ const crypto = require('crypto');
 
 const PORT = process.env.PORT || 3000;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'capi';
+
+// Si ignorano spazi e maiuscole: le tastiere dei telefoni li aggiungono da sole.
+function passwordOk(p) {
+  const pulisci = (x) => String(x || '').trim().toLowerCase();
+  return pulisci(p) === pulisci(ADMIN_PASSWORD);
+}
 const PUBLIC_DIR = path.join(__dirname, 'public');
 const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, 'data');
 const DATA_FILE = path.join(DATA_DIR, 'stato.json');
@@ -127,7 +133,7 @@ async function caricaFoto(req, res, parametri) {
 }
 
 function serviFoto(req, res, parametri) {
-  if (parametri.get('password') !== ADMIN_PASSWORD) return json(res, 401, { errore: 'Password sbagliata' });
+  if (!passwordOk(parametri.get('password'))) return json(res, 401, { errore: 'Password sbagliata' });
   const file = path.basename(new URL(req.url, 'http://x').pathname);
   fs.readFile(path.join(FOTO_DIR, file), (err, contenuto) => {
     if (err) return json(res, 404, { errore: 'Foto non trovata' });
@@ -243,13 +249,13 @@ const rotte = {
   },
 
   'POST /api/admin': (corpo) => {
-    if (corpo.password !== ADMIN_PASSWORD) return [401, { errore: 'Password sbagliata' }];
+    if (!passwordOk(corpo.password)) return [401, { errore: 'Password sbagliata' }];
     return [200, vistaAdmin()];
   },
 
   // Riporta una squadra all'inizio di una prova (azzera da lì in poi le risposte).
   'POST /api/admin/riporta': (corpo) => {
-    if (corpo.password !== ADMIN_PASSWORD) return [401, { errore: 'Password sbagliata' }];
+    if (!passwordOk(corpo.password)) return [401, { errore: 'Password sbagliata' }];
     const s = Object.values(stato.squadre).find((x) => x.id === corpo.id);
     if (!s) return [404, { errore: 'Squadra non trovata' }];
     const prova = Math.max(0, Math.min(Number(corpo.prova) || 0, gioco().domande.length - 1));
@@ -262,7 +268,7 @@ const rotte = {
   },
 
   'POST /api/admin/elimina': (corpo) => {
-    if (corpo.password !== ADMIN_PASSWORD) return [401, { errore: 'Password sbagliata' }];
+    if (!passwordOk(corpo.password)) return [401, { errore: 'Password sbagliata' }];
     const chiave = Object.keys(stato.squadre).find((k) => stato.squadre[k].id === corpo.id);
     if (chiave) {
       stato.squadre[chiave].foto.forEach((f) => fs.rm(path.join(FOTO_DIR, f.file), { force: true }, () => {}));
@@ -294,4 +300,5 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, () => {
   console.log(`Totopapaveromania su http://localhost:${PORT}  (admin: /admin)`);
+  console.log(process.env.ADMIN_PASSWORD ? 'Password capi: quella impostata in ADMIN_PASSWORD' : 'Password capi: "capi" (ADMIN_PASSWORD non impostata)');
 });

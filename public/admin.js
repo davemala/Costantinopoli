@@ -69,11 +69,16 @@ function disegnaMappa(dati) {
     if (conPercorsi && s.percorso.length > 1) {
       L.polyline(s.percorso.map((p) => [p[0], p[1]]), { color: colore, weight: 3, opacity: 0.6 }).addTo(livelli);
     }
+    s.foto.filter((f) => f.posizione).forEach((f) => {
+      L.marker([f.posizione.lat, f.posizione.lng], {
+        icon: L.divIcon({ className: 'segno-foto', html: `<span style="border-color:${colore}">📷${f.prova}</span>`, iconSize: [34, 22] }),
+      }).bindTooltip(`${esc(s.nome)} · foto missione ${f.prova} · ${ora(f.ora)}`).addTo(livelli);
+    });
     if (!s.ultimaPosizione) return;
     const p = [s.ultimaPosizione.lat, s.ultimaPosizione.lng];
     confini.push(p);
     L.circleMarker(p, { radius: 9, color: '#fff', weight: 2, fillColor: colore, fillOpacity: 1 })
-      .bindTooltip(`<b>${esc(s.nome)}</b><br>${descriviFase(s, dati.gioco.domande.length)}<br>${fa(s.ultimaPosizione.ora, dati.ora)}`,
+      .bindTooltip(`<b>${esc(s.nome)}</b><br>${descriviFase(s, dati.gioco.domande.length)}<br>${fa(s.ultimaPosizione.ora, dati.ora)}${s.ultimaPosizione.fonte === 'foto' ? ' (dalla foto)' : ''}`,
         { permanent: true, direction: 'right', offset: [10, 0] })
       .addTo(livelli);
   });
@@ -118,7 +123,7 @@ function disegnaSchede(dati) {
     const vecchia = p && dati.ora - p.ora > 5 * 60000;
     el.className = 'vista' + (!p || vecchia ? ' vecchia' : '');
     el.textContent = p
-      ? `Posizione ${fa(p.ora, dati.ora)} (±${Math.round(p.precisione || 0)} m)`
+      ? (p.fonte === 'foto' ? `Posizione dalla foto, ${fa(p.ora, dati.ora)}` : `Posizione ${fa(p.ora, dati.ora)} (±${Math.round(p.precisione || 0)} m)`)
       : 'Nessuna posizione ricevuta';
   });
 }

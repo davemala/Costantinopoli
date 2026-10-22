@@ -129,6 +129,8 @@ a.bottone {
 .scelta-foto { display: flex; gap: 10px; }
 .scelta-foto .bottone-foto { flex: 1; }
 
+.nota { font-size: .85rem; color: var(--grigio); margin-bottom: 10px; }
+
 .aiuto { margin-top: 16px; }
 .aiuto ol { padding-left: 20px; }
 .aiuto li { margin-bottom: 8px; }

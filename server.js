@@ -126,7 +126,21 @@ async function caricaFoto(req, res, parametri) {
   const file = `${s.id}-${s.prova + 1}-${Date.now()}.jpg`;
   fs.mkdirSync(FOTO_DIR, { recursive: true });
   fs.writeFileSync(path.join(FOTO_DIR, file), dati);
-  s.foto.push({ prova: s.prova + 1, file, ora: Date.now() });
+  const ora = Date.now();
+  const foto = { prova: s.prova + 1, file, ora };
+  // Posizione letta dal GPS dentro la foto (se il telefono non l'ha tolta). Serve quando la posizione
+  // dal vivo non funziona: la si usa solo se non ne è arrivata una dal vivo negli ultimi 5 minuti.
+  const lat = Number(parametri.get('lat'));
+  const lng = Number(parametri.get('lng'));
+  if (parametri.has('lat') && Number.isFinite(lat) && Number.isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180) {
+    foto.posizione = { lat, lng };
+    const p = s.ultimaPosizione;
+    if (!p || p.fonte === 'foto' || ora - p.ora > 5 * 60000) {
+      s.ultimaPosizione = { lat, lng, precisione: null, ora, fonte: 'foto' };
+      s.percorso.push([lat, lng, ora]);
+    }
+  }
+  s.foto.push(foto);
   s.fase = 'domanda';
   salva();
   json(res, 200, vistaSquadra(s));

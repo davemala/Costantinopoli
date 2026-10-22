@@ -117,6 +117,7 @@ $('btnPosizione').addEventListener('click', () => {
     if (!fine()) return;
     chiediPosizione(true);
     $('aiutoPosizione').querySelector('.errore').textContent = 'Il telefono non ha dato la posizione.';
+    $('dettaglioErrore').textContent = `(codice ${err.code}: ${err.message || 'nessun dettaglio'})`;
     if (err.code !== 1) $('aiutoPosizione').querySelector('.errore').textContent = 'Il telefono non trova la posizione: controllate che sia accesa e riprovate (meglio all\'aperto).';
   }, { enableHighAccuracy: true, maximumAge: 0, timeout: 20000 });
 });
@@ -216,9 +217,55 @@ $('formIngresso').addEventListener('submit', async (e) => {
 // ---------- Foto della missione ----------
 
 let fotoScelta = null;
+let gpsFoto = null;
+
+// Legge le coordinate GPS dai dati EXIF di una foto JPEG. Va fatto sul file originale:
+// rimpicciolendo la foto col canvas questi dati si perdono. Restituisce null se non ci sono.
+async function leggiGpsFoto(file) {
+  try {
+    const v = new DataView(await file.slice(0, 256 * 1024).arrayBuffer());
+    if (v.getUint16(0) !== 0xffd8) return null;
+    for (let o = 2; o + 10 < v.byteLength;) {
+      const marcatore = v.getUint16(o);
+      if (marcatore === 0xffe1 && v.getUint32(o + 4) === 0x45786966) return gpsDaTiff(v, o + 10); // "Exif"
+      if ((marcatore & 0xff00) !== 0xff00 || marcatore === 0xffda) return null;
+      o += 2 + v.getUint16(o + 2);
+    }
+  } catch (e) { /* file strano: niente posizione */ }
+  return null;
+}
+
+function gpsDaTiff(v, t) {
+  const le = v.getUint16(t) === 0x4949; // "II" = little endian
+  const u16 = (p) => v.getUint16(p, le);
+  const u32 = (p) => v.getUint32(p, le);
+  const voce = (ifd, id) => {
+    for (let i = 0, n = u16(ifd); i < n; i++) if (u16(ifd + 2 + i * 12) === id) return ifd + 2 + i * 12;
+    return null;
+  };
+  const puntatoreGps = voce(t + u32(t + 4), 0x8825);
+  if (!puntatoreGps) return null;
+  const gps = t + u32(puntatoreGps + 8);
+  const gradi = (id) => {
+    const e = voce(gps, id);
+    if (!e) return NaN;
+    const p = t + u32(e + 8);
+    const r = (k) => u32(p + k * 8) / u32(p + k * 8 + 4);
+    return r(0) + r(1) / 60 + r(2) / 3600;
+  };
+  const verso = (id) => { const e = voce(gps, id); return e ? String.fromCharCode(v.getUint8(e + 8)) : ''; };
+  let lat = gradi(2);
+  let lng = gradi(4);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng) || (lat === 0 && lng === 0)) return null;
+  if (verso(1) === 'S') lat = -lat;
+  if (verso(3) === 'W') lng = -lng;
+  return { lat, lng };
+}
 
 function azzeraFoto() {
   fotoScelta = null;
+  gpsFoto = null;
+  $('gpsFoto').textContent = '';
   $('campoFotoScatta').value = '';
   $('campoFotoGalleria').value = '';
   $('anteprima').classList.add('nascosto');
@@ -254,6 +301,8 @@ async function quandoScegliFoto(e) {
   if (!file) return;
   $('erroreFoto').textContent = '';
   try {
+    gpsFoto = await leggiGpsFoto(file);
+    $('gpsFoto').textContent = gpsFoto ? '📍 Posizione trovata nella foto' : 'Nella foto non c\'è la posizione';
     fotoScelta = await rimpicciolisci(file);
     $('anteprima').src = URL.createObjectURL(fotoScelta);
     $('anteprima').classList.remove('nascosto');
@@ -273,7 +322,8 @@ $('btnInviaFoto').addEventListener('click', async () => {
   btn.textContent = 'Invio in corso…';
   $('erroreFoto').textContent = '';
   try {
-    const r = await fetch(`/api/foto?token=${encodeURIComponent(squadra.token)}&prova=${squadra.prova}`, {
+    const dove = gpsFoto ? `&lat=${gpsFoto.lat}&lng=${gpsFoto.lng}` : '';
+    const r = await fetch(`/api/foto?token=${encodeURIComponent(squadra.token)}&prova=${squadra.prova}${dove}`, {
       method: 'POST',
       headers: { 'Content-Type': 'image/jpeg' },
       body: fotoScelta,

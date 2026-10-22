@@ -81,6 +81,9 @@ Funziona dal browser su entrambi (Safari o Chrome su iPhone, Chrome su Android):
 - Se la posizione è negata o spenta, la pagina spiega passo passo dove riattivarla (diverso per iPhone e
   Android). In extremis c'è *"Continua senza posizione"*: la squadriglia gioca, ma sulla mappa dei capi
   resta in rosso.
+- Se una foto contiene le coordinate GPS, la posizione viene letta da lì e i capi vedono un 📷 sulla mappa
+  nel punto della foto. Serve da riserva quando la posizione dal vivo non va, ma spesso il telefono toglie
+  il GPS dalle foto inviate ai siti: sotto l'anteprima la pagina dice se l'ha trovata o no.
 - Per le foto ci sono due pulsanti: **Scatta la foto** (apre subito la fotocamera) e **Dalla galleria**.
 - Lo schermo resta acceso da solo su Android e su iPhone con iOS 16.4 o successivo.
 

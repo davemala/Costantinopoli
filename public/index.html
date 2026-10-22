@@ -34,9 +34,12 @@
       <button id="btnPosizione">📍 Attiva la posizione</button>
       <div id="aiutoPosizione" class="aiuto nascosto">
         <p class="errore">Il telefono non ha dato la posizione.</p>
+        <p class="nota" id="dettaglioErrore"></p>
         <div id="aiutoIphone">
-          <p><strong>Su iPhone</strong> controllate queste due cose:</p>
+          <p><strong>Su iPhone</strong> controllate queste cose:</p>
           <ol>
+            <li>Se avete aperto il link da WhatsApp, Instagram, Telegram o simili, apritelo invece in <strong>Safari</strong>
+              (dal menu <strong>⋯</strong> o dalla bussola → <strong>Apri in Safari</strong>).</li>
             <li>Aprite <strong>Impostazioni → Privacy e sicurezza → Localizzazione</strong>: deve essere attiva.
               Nella stessa pagina scorrete fino a <strong>Siti web di Safari</strong> (o <strong>Chrome</strong>, se usate Chrome)
               e scegliete <strong>"Chiedi la prossima volta"</strong> o <strong>"Mentre usi l'app"</strong>, con <strong>Posizione esatta</strong> attiva.</li>
@@ -75,6 +78,7 @@
         <input id="campoFotoScatta" type="file" accept="image/*" capture="environment" class="file-nascosto">
         <input id="campoFotoGalleria" type="file" accept="image/*" class="file-nascosto">
         <img id="anteprima" class="anteprima nascosto" alt="Anteprima della foto">
+        <div class="nota" id="gpsFoto"></div>
         <div class="errore" id="erroreFoto"></div>
         <button id="btnInviaFoto" class="nascosto">Invia la foto e vai avanti ✔</button>
         <button id="btnSenzaFoto" class="link">Non riusciamo a caricare la foto</button>

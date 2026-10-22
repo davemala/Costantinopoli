@@ -73,8 +73,8 @@ function servePosizioneDallaFoto() {
 
 function aggiornaSceltaFoto() {
   const serve = servePosizioneDallaFoto();
-  $('fotoSenzaGps').classList.toggle('nascosto', !serve);
   $('etichettaScatta').classList.toggle('nascosto', serve);
+  $('etichettaGalleria').textContent = serve ? '📷 Carica la foto' : '🖼️ Dalla galleria';
 }
 
 function chiediPosizione(conAiuto) {
@@ -102,10 +102,6 @@ async function controllaPosizione() {
   }
 }
 
-$('aiutoIphone').classList.toggle('nascosto', !IPHONE);
-$('aiutoAndroid').classList.toggle('nascosto', IPHONE);
-$('aiutoFotoIphone').classList.toggle('nascosto', !IPHONE);
-$('aiutoFotoAndroid').classList.toggle('nascosto', IPHONE);
 
 $('btnPosizione').addEventListener('click', () => {
   const btn = $('btnPosizione');
@@ -131,14 +127,10 @@ $('btnPosizione').addEventListener('click', () => {
   }, (err) => {
     if (!fine()) return;
     chiediPosizione(true);
-    $('aiutoPosizione').querySelector('.errore').textContent = 'Il telefono non ha dato la posizione.';
-    $('dettaglioErrore').textContent = `(codice ${err.code}: ${err.message || 'nessun dettaglio'})`;
-    if (err.code !== 1) $('aiutoPosizione').querySelector('.errore').textContent = 'Il telefono non trova la posizione: controllate che sia accesa e riprovate (meglio all\'aperto).';
   }, { enableHighAccuracy: true, maximumAge: 0, timeout: 20000 });
 });
 
 $('btnSenzaPosizione').addEventListener('click', () => {
-  if (!confirm('Senza posizione i capi non sapranno dove siete. Continuare lo stesso?')) return;
   senzaPosizione = true;
   statoGps('Posizione non attiva', false);
   mostraGioco();
@@ -235,23 +227,23 @@ $('formIngresso').addEventListener('submit', async (e) => {
 let fotoScelta = null;
 let gpsFoto = null;
 
-// Legge le coordinate GPS dai dati EXIF di una foto JPEG. Va fatto sul file originale:
-// rimpicciolendo la foto col canvas questi dati si perdono. Restituisce null se non ci sono.
-async function leggiGpsFoto(file) {
+// Legge posizione GPS e ora di scatto dai dati EXIF di una foto JPEG. Va fatto sul file originale:
+// rimpicciolendo la foto col canvas questi dati si perdono. Quello che manca resta null.
+async function leggiInfoFoto(file) {
   try {
     const v = new DataView(await file.slice(0, 256 * 1024).arrayBuffer());
-    if (v.getUint16(0) !== 0xffd8) return null;
+    if (v.getUint16(0) !== 0xffd8) return { gps: null, scattata: null };
     for (let o = 2; o + 10 < v.byteLength;) {
       const marcatore = v.getUint16(o);
-      if (marcatore === 0xffe1 && v.getUint32(o + 4) === 0x45786966) return gpsDaTiff(v, o + 10); // "Exif"
-      if ((marcatore & 0xff00) !== 0xff00 || marcatore === 0xffda) return null;
+      if (marcatore === 0xffe1 && v.getUint32(o + 4) === 0x45786966) return leggiTiff(v, o + 10); // "Exif"
+      if ((marcatore & 0xff00) !== 0xff00 || marcatore === 0xffda) break;
       o += 2 + v.getUint16(o + 2);
     }
-  } catch (e) { /* file strano: niente posizione */ }
-  return null;
+  } catch (e) { /* file strano: niente dati */ }
+  return { gps: null, scattata: null };
 }
 
-function gpsDaTiff(v, t) {
+function leggiTiff(v, t) {
   const le = v.getUint16(t) === 0x4949; // "II" = little endian
   const u16 = (p) => v.getUint16(p, le);
   const u32 = (p) => v.getUint32(p, le);
@@ -259,29 +251,44 @@ function gpsDaTiff(v, t) {
     for (let i = 0, n = u16(ifd); i < n; i++) if (u16(ifd + 2 + i * 12) === id) return ifd + 2 + i * 12;
     return null;
   };
-  const puntatoreGps = voce(t + u32(t + 4), 0x8825);
-  if (!puntatoreGps) return null;
-  const gps = t + u32(puntatoreGps + 8);
-  const gradi = (id) => {
-    const e = voce(gps, id);
-    if (!e) return NaN;
+  const ifd0 = t + u32(t + 4);
+  return { gps: leggiGps(), scattata: leggiOra() };
+
+  function leggiGps() {
+    const puntatore = voce(ifd0, 0x8825);
+    if (!puntatore) return null;
+    const gps = t + u32(puntatore + 8);
+    const gradi = (id) => {
+      const e = voce(gps, id);
+      if (!e) return NaN;
+      const p = t + u32(e + 8);
+      const r = (k) => u32(p + k * 8) / u32(p + k * 8 + 4);
+      return r(0) + r(1) / 60 + r(2) / 3600;
+    };
+    const verso = (id) => { const e = voce(gps, id); return e ? String.fromCharCode(v.getUint8(e + 8)) : ''; };
+    let lat = gradi(2);
+    let lng = gradi(4);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng) || (lat === 0 && lng === 0)) return null;
+    if (verso(1) === 'S') lat = -lat;
+    if (verso(3) === 'W') lng = -lng;
+    return { lat, lng };
+  }
+
+  // DateTimeOriginal, "AAAA:MM:GG hh:mm:ss" nell'ora locale del telefono.
+  function leggiOra() {
+    const puntatore = voce(ifd0, 0x8769);
+    const e = puntatore && voce(t + u32(puntatore + 8), 0x9003);
+    if (!e) return null;
     const p = t + u32(e + 8);
-    const r = (k) => u32(p + k * 8) / u32(p + k * 8 + 4);
-    return r(0) + r(1) / 60 + r(2) / 3600;
-  };
-  const verso = (id) => { const e = voce(gps, id); return e ? String.fromCharCode(v.getUint8(e + 8)) : ''; };
-  let lat = gradi(2);
-  let lng = gradi(4);
-  if (!Number.isFinite(lat) || !Number.isFinite(lng) || (lat === 0 && lng === 0)) return null;
-  if (verso(1) === 'S') lat = -lat;
-  if (verso(3) === 'W') lng = -lng;
-  return { lat, lng };
+    const testo = Array.from({ length: 19 }, (_, k) => String.fromCharCode(v.getUint8(p + k))).join('');
+    const n = testo.match(/^(\d{4}):(\d{2}):(\d{2}) (\d{2}):(\d{2}):(\d{2})$/);
+    return n ? new Date(n[1], n[2] - 1, n[3], n[4], n[5], n[6]) : null;
+  }
 }
 
 function azzeraFoto() {
   fotoScelta = null;
   gpsFoto = null;
-  $('gpsFoto').textContent = '';
   $('campoFotoScatta').value = '';
   $('campoFotoGalleria').value = '';
   $('anteprima').classList.add('nascosto');
@@ -317,11 +324,15 @@ async function quandoScegliFoto(e) {
   if (!file) return;
   $('erroreFoto').textContent = '';
   try {
-    gpsFoto = await leggiGpsFoto(file);
-    $('gpsFoto').textContent = gpsFoto ? '📍 Posizione trovata nella foto' : 'Nella foto non c\'è la posizione';
-    if (!gpsFoto && servePosizioneDallaFoto()) {
-      throw new Error('Questa foto non ha la posizione: scattatela con l\'app Fotocamera del telefono e caricatela da "Dalla galleria" (leggete le istruzioni qui sopra).');
+    const info = await leggiInfoFoto(file);
+    // 10 minuti di margine per orologi dei telefoni un po' sfasati.
+    if (info.scattata && info.scattata.getTime() < squadra.iniziata - 10 * 60000) {
+      throw new Error('Questa foto è stata scattata prima dell\'inizio del gioco: fatene una nuova.');
     }
+    if (!info.gps && servePosizioneDallaFoto()) {
+      throw new Error('Questa foto non ha la posizione: scattatela con la fotocamera del telefono e caricatela.');
+    }
+    gpsFoto = info.gps;
     fotoScelta = await rimpicciolisci(file);
     $('anteprima').src = URL.createObjectURL(fotoScelta);
     $('anteprima').classList.remove('nascosto');

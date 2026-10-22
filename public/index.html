@@ -33,30 +33,8 @@
         Premete il pulsante e, quando il telefono lo chiede, rispondete <strong>Consenti</strong>.</p>
       <button id="btnPosizione">📍 Attiva la posizione</button>
       <div id="aiutoPosizione" class="aiuto nascosto">
-        <p class="errore">Il telefono non ha dato la posizione.</p>
-        <p class="nota" id="dettaglioErrore"></p>
-        <div id="aiutoIphone">
-          <p><strong>Su iPhone</strong> controllate queste cose:</p>
-          <ol>
-            <li>Se avete aperto il link da WhatsApp, Instagram, Telegram o simili, apritelo invece in <strong>Safari</strong>
-              (dal menu <strong>⋯</strong> o dalla bussola → <strong>Apri in Safari</strong>).</li>
-            <li>Aprite <strong>Impostazioni → Privacy e sicurezza → Localizzazione</strong>: deve essere attiva.
-              Nella stessa pagina scorrete fino a <strong>Siti web di Safari</strong> (o <strong>Chrome</strong>, se usate Chrome)
-              e scegliete <strong>"Chiedi la prossima volta"</strong> o <strong>"Mentre usi l'app"</strong>, con <strong>Posizione esatta</strong> attiva.</li>
-            <li>Tornate qui: in Safari toccate <strong>aA</strong> (o l'icona a sinistra dell'indirizzo) → <strong>Impostazioni sito web</strong>
-              → <strong>Posizione</strong> → <strong>Consenti</strong>.</li>
-          </ol>
-        </div>
-        <div id="aiutoAndroid">
-          <p><strong>Su Android</strong> controllate queste due cose:</p>
-          <ol>
-            <li>Tirate giù la tendina in alto e accendete <strong>Posizione</strong> (o GPS).</li>
-            <li>Toccate l'icona a sinistra dell'indirizzo → <strong>Autorizzazioni</strong> (o Impostazioni sito)
-              → <strong>Posizione</strong> → <strong>Consenti</strong>.</li>
-          </ol>
-        </div>
-        <p>Poi premete di nuovo <strong>Attiva la posizione</strong>.</p>
-        <button id="btnSenzaPosizione" class="link">Continua senza posizione (avvisate i capi)</button>
+        <p class="errore">Posizione non disponibile.</p>
+        <button id="btnSenzaPosizione" class="secondario">Continua senza</button>
       </div>
     </section>
 
@@ -70,27 +48,14 @@
 
       <div class="card" id="bloccoMissione">
         <p><strong>Missione completata?</strong> Caricate una foto come prova.</p>
-        <div id="fotoSenzaGps" class="avviso nascosto">
-          <p><strong>La posizione dal vivo non è attiva</strong>, quindi la posizione la prendiamo dalla foto:</p>
-          <ol>
-            <li>Scattate la foto con l'app <strong>Fotocamera</strong> del telefono (non da qui).</li>
-            <li>Tornate qui e premete <strong>Dalla galleria</strong> per caricarla.</li>
-          </ol>
-          <p class="nota" id="aiutoFotoIphone">Se la foto risulta senza posizione: Impostazioni → Privacy e sicurezza → Localizzazione →
-            Fotocamera → "Mentre usi l'app", con Posizione esatta attiva. Nella schermata per scegliere la foto,
-            se in alto c'è "Opzioni", attivate "Posizione".</p>
-          <p class="nota" id="aiutoFotoAndroid">Se la foto risulta senza posizione: nell'app Fotocamera aprite le impostazioni
-            (⚙️) e attivate "Tag posizione" o "Salva posizione", poi riscattate la foto.</p>
-        </div>
         <div class="scelta-foto">
           <label class="bottone-foto" id="etichettaScatta" for="campoFotoScatta">📷 Scatta la foto</label>
-          <label class="bottone-foto" for="campoFotoGalleria">🖼️ Dalla galleria</label>
+          <label class="bottone-foto" id="etichettaGalleria" for="campoFotoGalleria">🖼️ Dalla galleria</label>
         </div>
         <!-- capture apre direttamente la fotocamera: su Android senza capture si vede solo la galleria -->
         <input id="campoFotoScatta" type="file" accept="image/*" capture="environment" class="file-nascosto">
         <input id="campoFotoGalleria" type="file" accept="image/*" class="file-nascosto">
         <img id="anteprima" class="anteprima nascosto" alt="Anteprima della foto">
-        <div class="nota" id="gpsFoto"></div>
         <div class="errore" id="erroreFoto"></div>
         <button id="btnInviaFoto" class="nascosto">Invia la foto e vai avanti ✔</button>
         <button id="btnSenzaFoto" class="link">Non riusciamo a caricare la foto</button>

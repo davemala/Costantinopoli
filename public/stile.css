@@ -129,20 +129,7 @@ a.bottone {
 .scelta-foto { display: flex; gap: 10px; }
 .scelta-foto .bottone-foto { flex: 1; }
 
-.avviso {
-  background: #fff6dc;
-  border-left: 4px solid #e0a800;
-  border-radius: 8px;
-  padding: 4px 14px;
-  margin-bottom: 14px;
-}
-.avviso ol { padding-left: 20px; }
-
-.nota { font-size: .85rem; color: var(--grigio); margin-bottom: 10px; }
-
 .aiuto { margin-top: 16px; }
-.aiuto ol { padding-left: 20px; }
-.aiuto li { margin-bottom: 8px; }
 
 .anteprima {
   display: block;

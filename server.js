@@ -74,6 +74,7 @@ function vistaSquadra(s) {
     nome: s.nome,
     token: s.token,
     titolo: g.titolo,
+    iniziata: s.creata,
     tracciamentoFino: s.creata + g.durataTracciamentoOre * 3600 * 1000,
     prova: Math.min(s.prova + 1, totale),
     totale,

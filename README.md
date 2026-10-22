@@ -78,16 +78,11 @@ oppure Railway/Fly.io con un volume) e impostare `DATA_DIR` sul percorso del dis
 Funziona dal browser su entrambi (Safari o Chrome su iPhone, Chrome su Android): non serve installare nulla.
 - Dopo il nome compare il pulsante **📍 Attiva la posizione**: toccandolo il telefono mostra il popup,
   a cui rispondere **Consenti** (su iPhone il popup compare in modo affidabile solo dopo un tocco).
-- Se la posizione è negata o spenta, la pagina spiega passo passo dove riattivarla (diverso per iPhone e
-  Android). In extremis c'è *"Continua senza posizione"*: la squadriglia gioca, ma sulla mappa dei capi
-  resta in rosso.
-- **Senza posizione dal vivo** (negata, o "Continua senza posizione") la posizione si prende dalle foto:
-  sparisce "Scatta la foto" (le foto scattate da una pagina web non hanno il GPS), si scatta con l'app
-  Fotocamera del telefono e si carica da "Dalla galleria". Una foto senza posizione viene rifiutata, con le
-  istruzioni per attivare la posizione nella Fotocamera.
-- Se una foto contiene le coordinate GPS, la posizione viene letta da lì e i capi vedono un 📷 sulla mappa
-  nel punto della foto. Serve da riserva quando la posizione dal vivo non va, ma spesso il telefono toglie
-  il GPS dalle foto inviate ai siti: sotto l'anteprima la pagina dice se l'ha trovata o no.
+  Se la posizione non arriva c'è **Continua senza**.
+- **Senza posizione dal vivo** la posizione si prende dal GPS delle foto: resta solo **Carica la foto**
+  (le foto scattate da una pagina web non hanno il GPS, vanno scattate con la fotocamera del telefono)
+  e una foto senza posizione viene rifiutata. I capi vedono un 📷 sulla mappa nel punto della foto.
+- Le foto scattate prima dell'ingresso della squadriglia nel gioco vengono rifiutate (10 minuti di margine).
 - Per le foto ci sono due pulsanti: **Scatta la foto** (apre subito la fotocamera) e **Dalla galleria**.
 - Lo schermo resta acceso da solo su Android e su iPhone con iOS 16.4 o successivo.
 

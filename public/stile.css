@@ -141,6 +141,8 @@ a.bottone {
   margin-bottom: 12px;
 }
 
+.suggerimento { font-size: .9rem; color: var(--grigio); margin: -4px 0 12px; text-align: center; }
+
 button.link {
   background: none;
   color: var(--grigio);

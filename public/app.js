@@ -74,7 +74,9 @@ function servePosizioneDallaFoto() {
 function aggiornaSceltaFoto() {
   const serve = servePosizioneDallaFoto();
   $('etichettaScatta').classList.toggle('nascosto', serve);
-  $('etichettaGalleria').textContent = serve ? '📷 Carica la foto' : '🖼️ Dalla galleria';
+  $('etichettaGalleria').textContent = serve ? '🖼️ Carica la foto' : '🖼️ Dalla galleria';
+  // Su iPhone il menu di Safari offre anche "Scatta foto", che però dà foto senza posizione: non si può togliere.
+  $('suggerimentoIphone').classList.toggle('nascosto', !(serve && IPHONE));
 }
 
 function chiediPosizione(conAiuto) {

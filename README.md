@@ -81,7 +81,7 @@ Funziona dal browser su entrambi (Safari o Chrome su iPhone, Chrome su Android):
   Se la posizione non arriva c'è **Continua senza**.
 - **Senza posizione dal vivo** la posizione si prende dal GPS delle foto: resta solo **Carica la foto**
   (le foto scattate da una pagina web non hanno il GPS, vanno scattate con la fotocamera del telefono)
-  e una foto senza posizione viene rifiutata. I capi vedono un 📷 sulla mappa nel punto della foto.
+  (se la foto non ha la posizione si va avanti lo stesso). I capi vedono un 📷 sulla mappa nel punto della foto.
 - Le foto scattate prima dell'ingresso della squadriglia nel gioco vengono rifiutate (10 minuti di margine).
 - Per le foto ci sono due pulsanti: **Scatta la foto** (apre subito la fotocamera) e **Dalla galleria**.
 - Lo schermo resta acceso da solo su Android e su iPhone con iOS 16.4 o successivo.

@@ -329,9 +329,6 @@ async function quandoScegliFoto(e) {
     if (info.scattata && info.scattata.getTime() < squadra.iniziata - 10 * 60000) {
       throw new Error('Questa foto è stata scattata prima dell\'inizio del gioco: fatene una nuova.');
     }
-    if (!info.gps && servePosizioneDallaFoto()) {
-      throw new Error('Questa foto non ha la posizione: scattatela con la fotocamera del telefono e caricatela.');
-    }
     gpsFoto = info.gps;
     fotoScelta = await rimpicciolisci(file);
     $('anteprima').src = URL.createObjectURL(fotoScelta);

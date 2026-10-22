@@ -62,6 +62,19 @@ function mostra(s) {
 function mostraGioco() {
   $('schermoPosizione').classList.add('nascosto');
   $('schermoGioco').classList.remove('nascosto');
+  aggiornaSceltaFoto();
+}
+
+// Senza posizione dal vivo la posizione si prende dal GPS della foto. Le foto scattate da qui
+// (pulsante "Scatta") non ce l'hanno, quindi si deve scattare con la Fotocamera e caricare dalla galleria.
+function servePosizioneDallaFoto() {
+  return watchId === null && !tracciamentoScaduto();
+}
+
+function aggiornaSceltaFoto() {
+  const serve = servePosizioneDallaFoto();
+  $('fotoSenzaGps').classList.toggle('nascosto', !serve);
+  $('etichettaScatta').classList.toggle('nascosto', serve);
 }
 
 function chiediPosizione(conAiuto) {
@@ -91,6 +104,8 @@ async function controllaPosizione() {
 
 $('aiutoIphone').classList.toggle('nascosto', !IPHONE);
 $('aiutoAndroid').classList.toggle('nascosto', IPHONE);
+$('aiutoFotoIphone').classList.toggle('nascosto', !IPHONE);
+$('aiutoFotoAndroid').classList.toggle('nascosto', IPHONE);
 
 $('btnPosizione').addEventListener('click', () => {
   const btn = $('btnPosizione');
@@ -146,6 +161,7 @@ function avviaPosizione() {
   watchId = navigator.geolocation.watchPosition(inviaPosizione, (err) => {
     if (err.code === 1) { // permesso tolto a gioco iniziato: si torna al pulsante
       fermaPosizione();
+      aggiornaSceltaFoto();
       return chiediPosizione(true);
     }
     statoGps('Posizione non disponibile, riprovo…', false);
@@ -303,6 +319,9 @@ async function quandoScegliFoto(e) {
   try {
     gpsFoto = await leggiGpsFoto(file);
     $('gpsFoto').textContent = gpsFoto ? '📍 Posizione trovata nella foto' : 'Nella foto non c\'è la posizione';
+    if (!gpsFoto && servePosizioneDallaFoto()) {
+      throw new Error('Questa foto non ha la posizione: scattatela con l\'app Fotocamera del telefono e caricatela da "Dalla galleria" (leggete le istruzioni qui sopra).');
+    }
     fotoScelta = await rimpicciolisci(file);
     $('anteprima').src = URL.createObjectURL(fotoScelta);
     $('anteprima').classList.remove('nascosto');

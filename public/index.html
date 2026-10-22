@@ -70,8 +70,20 @@
 
       <div class="card" id="bloccoMissione">
         <p><strong>Missione completata?</strong> Caricate una foto come prova.</p>
+        <div id="fotoSenzaGps" class="avviso nascosto">
+          <p><strong>La posizione dal vivo non è attiva</strong>, quindi la posizione la prendiamo dalla foto:</p>
+          <ol>
+            <li>Scattate la foto con l'app <strong>Fotocamera</strong> del telefono (non da qui).</li>
+            <li>Tornate qui e premete <strong>Dalla galleria</strong> per caricarla.</li>
+          </ol>
+          <p class="nota" id="aiutoFotoIphone">Se la foto risulta senza posizione: Impostazioni → Privacy e sicurezza → Localizzazione →
+            Fotocamera → "Mentre usi l'app", con Posizione esatta attiva. Nella schermata per scegliere la foto,
+            se in alto c'è "Opzioni", attivate "Posizione".</p>
+          <p class="nota" id="aiutoFotoAndroid">Se la foto risulta senza posizione: nell'app Fotocamera aprite le impostazioni
+            (⚙️) e attivate "Tag posizione" o "Salva posizione", poi riscattate la foto.</p>
+        </div>
         <div class="scelta-foto">
-          <label class="bottone-foto" for="campoFotoScatta">📷 Scatta la foto</label>
+          <label class="bottone-foto" id="etichettaScatta" for="campoFotoScatta">📷 Scatta la foto</label>
           <label class="bottone-foto" for="campoFotoGalleria">🖼️ Dalla galleria</label>
         </div>
         <!-- capture apre direttamente la fotocamera: su Android senza capture si vede solo la galleria -->

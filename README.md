@@ -7,8 +7,8 @@ Web app per il gioco a missioni con le squadriglie. Nessuna dipendenza: basta No
 **Squadre** (`/`)
 1. Scrivono il nome della squadriglia ed entrano. Se rientrano con lo stesso nome
    (anche da un altro telefono) ritrovano la loro partita.
-2. Il telefono chiede il permesso per la posizione: da lì, per **3 ore**, la posizione
-   viene inviata ai capi ogni 20 secondi circa. La pagina tiene lo schermo acceso.
+2. Il telefono chiede il permesso per la posizione: se lo danno, per **3 ore** la posizione
+   viene inviata ai capi ogni 20 secondi circa (altrimenti si gioca senza, senza avvisi). La pagina tiene lo schermo acceso.
 3. Vedono la prima delle loro **3 missioni estratte a caso** → quando l'hanno fatta caricano una **foto**
    come prova (scattata al momento o presa dalla galleria) → compare la **domanda 1**
    → inviano la risposta → compare la **missione 2**, e così via per 3 prove.
@@ -76,14 +76,13 @@ oppure Railway/Fly.io con un volume) e impostare `DATA_DIR` sul percorso del dis
 ## iPhone e Android
 
 Funziona dal browser su entrambi (Safari o Chrome su iPhone, Chrome su Android): non serve installare nulla.
-- Dopo il nome compare il pulsante **📍 Attiva la posizione**: toccandolo il telefono mostra il popup,
-  a cui rispondere **Consenti** (su iPhone il popup compare in modo affidabile solo dopo un tocco).
-  Se la posizione non arriva c'è **Continua senza**.
-- **Senza posizione dal vivo** la posizione si prende dal GPS delle foto: resta solo **Carica la foto**
-  (le foto scattate da una pagina web non hanno il GPS, vanno scattate con la fotocamera del telefono)
-  (se la foto non ha la posizione si va avanti lo stesso). I capi vedono un 📷 sulla mappa nel punto della foto.
+- La posizione è **silenziosa**: toccando *Entra* il telefono chiede il permesso col suo popup; se lo danno,
+  la posizione arriva ai capi, altrimenti si gioca senza e la pagina non dice niente.
+- Per le foto ci sono due pulsanti, **Scatta la foto** (apre subito la fotocamera) e **Dalla galleria**.
+  Se la foto contiene il GPS (di solito quelle scattate con la Fotocamera del telefono e caricate dalla
+  galleria) i capi vedono un 📷 sulla mappa nel punto della foto, e se la posizione dal vivo manca diventa
+  quella della squadriglia.
 - Le foto scattate prima dell'ingresso della squadriglia nel gioco vengono rifiutate (10 minuti di margine).
-- Per le foto ci sono due pulsanti: **Scatta la foto** (apre subito la fotocamera) e **Dalla galleria**.
 - Lo schermo resta acceso da solo su Android e su iPhone con iOS 16.4 o successivo.
 
 ## Limiti da sapere

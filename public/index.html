@@ -17,25 +17,12 @@
     <!-- Ingresso -->
     <section id="schermoIngresso" class="card">
       <span class="etichetta">Benvenuti</span>
-      <p>Scrivete il nome della vostra squadriglia per iniziare. Vi verrà chiesto di
-        attivare la posizione: tenetela accesa e lasciate questa pagina aperta.</p>
+      <p>Scrivete il nome della vostra squadriglia per iniziare, e tenete questa pagina aperta per tutto il gioco.</p>
       <form id="formIngresso">
         <input id="campoNome" placeholder="Nome della squadriglia" autocomplete="off" maxlength="40" required>
         <div class="errore" id="erroreIngresso"></div>
         <button type="submit">Entra</button>
       </form>
-    </section>
-
-    <!-- Posizione: il popup del telefono compare in modo affidabile (soprattutto su iPhone) solo dopo un tocco -->
-    <section id="schermoPosizione" class="card nascosto">
-      <span class="etichetta">Prima di iniziare</span>
-      <p>Per giocare dovete condividere la posizione con i capi.
-        Premete il pulsante e, quando il telefono lo chiede, rispondete <strong>Consenti</strong>.</p>
-      <button id="btnPosizione">📍 Attiva la posizione</button>
-      <div id="aiutoPosizione" class="aiuto nascosto">
-        <p class="errore">Posizione non disponibile.</p>
-        <button id="btnSenzaPosizione" class="secondario">Continua senza</button>
-      </div>
     </section>
 
     <!-- Gioco -->
@@ -49,10 +36,9 @@
       <div class="card" id="bloccoMissione">
         <p><strong>Missione completata?</strong> Caricate una foto come prova.</p>
         <div class="scelta-foto">
-          <label class="bottone-foto" id="etichettaScatta" for="campoFotoScatta">📷 Scatta la foto</label>
-          <label class="bottone-foto" id="etichettaGalleria" for="campoFotoGalleria">🖼️ Dalla galleria</label>
+          <label class="bottone-foto" for="campoFotoScatta">📷 Scatta la foto</label>
+          <label class="bottone-foto" for="campoFotoGalleria">🖼️ Dalla galleria</label>
         </div>
-        <p class="suggerimento nascosto" id="suggerimentoIphone">Scattate con la Fotocamera dell'iPhone, poi qui scegliete <strong>«Libreria foto»</strong>.</p>
         <!-- capture apre direttamente la fotocamera: su Android senza capture si vede solo la galleria -->
         <input id="campoFotoScatta" type="file" accept="image/*" capture="environment" class="file-nascosto">
         <input id="campoFotoGalleria" type="file" accept="image/*" class="file-nascosto">
@@ -73,10 +59,6 @@
         <a class="bottone" id="linkMappa" target="_blank" rel="noopener">Apri il punto nelle Mappe</a>
       </div>
 
-      <div class="card gps">
-        <span class="pallino" id="pallinoGps"></span>
-        <span id="statoGps">Posizione non ancora attiva</span>
-      </div>
     </section>
   </main>
 

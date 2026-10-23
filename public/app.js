@@ -3,11 +3,11 @@ const LATO_MAX_FOTO = 1600; // le foto si rimpiccioliscono sul telefono prima de
 const $ = (id) => document.getElementById(id);
 
 const IPHONE = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-let senzaPosizione = false; // la squadra ha scelto di giocare comunque senza posizione
 
 let squadra = null;
 let watchId = null;
 let ultimoInvio = 0;
+let ultimaPos = null; // l'ultima posizione data dal telefono, inviata o no
 let wakeLock = null;
 
 async function chiama(url, dati) {
@@ -54,111 +54,21 @@ function mostra(s) {
       || (IPHONE ? `https://maps.apple.com/?ll=${lat},${lng}&q=Arrivo` : `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`);
   }
 
-  controllaPosizione();
+  $('schermoGioco').classList.remove('nascosto');
+  avviaPosizione();
 }
 
 // ---------- Posizione ----------
-
-function mostraGioco() {
-  $('schermoPosizione').classList.add('nascosto');
-  $('schermoGioco').classList.remove('nascosto');
-  aggiornaSceltaFoto();
-}
-
-// Senza posizione dal vivo la posizione si prende dal GPS della foto. Le foto scattate da qui
-// (pulsante "Scatta") non ce l'hanno, quindi si deve scattare con la Fotocamera e caricare dalla galleria.
-function servePosizioneDallaFoto() {
-  return watchId === null && !tracciamentoScaduto();
-}
-
-function aggiornaSceltaFoto() {
-  const serve = servePosizioneDallaFoto();
-  $('etichettaScatta').classList.toggle('nascosto', serve);
-  $('etichettaGalleria').textContent = serve ? '🖼️ Carica la foto' : '🖼️ Dalla galleria';
-  // Su iPhone il menu di Safari offre anche "Scatta foto", che però dà foto senza posizione: non si può togliere.
-  $('suggerimentoIphone').classList.toggle('nascosto', !(serve && IPHONE));
-}
-
-function chiediPosizione(conAiuto) {
-  $('schermoGioco').classList.add('nascosto');
-  $('schermoPosizione').classList.remove('nascosto');
-  $('aiutoPosizione').classList.toggle('nascosto', !conAiuto);
-}
-
-// Se il permesso c'è già si parte subito, altrimenti si mostra il pulsante per chiederlo.
-async function controllaPosizione() {
-  if (watchId !== null || senzaPosizione || tracciamentoScaduto() || !('geolocation' in navigator)) {
-    if (tracciamentoScaduto()) statoGps('Tracciamento concluso', null);
-    else if (!('geolocation' in navigator)) statoGps('Questo telefono non supporta la posizione', false);
-    return mostraGioco();
-  }
-  let permesso = 'prompt';
-  try {
-    permesso = (await navigator.permissions.query({ name: 'geolocation' })).state;
-  } catch (e) { /* browser senza Permissions API: si chiede col pulsante */ }
-  if (permesso === 'granted') {
-    avviaPosizione();
-    mostraGioco();
-  } else {
-    chiediPosizione(permesso === 'denied');
-  }
-}
-
-
-$('btnPosizione').addEventListener('click', () => {
-  const btn = $('btnPosizione');
-  btn.disabled = true;
-  btn.textContent = 'Attendo il telefono…';
-  let finito = false;
-  const fine = () => {
-    if (finito) return false;
-    finito = true;
-    btn.disabled = false;
-    btn.textContent = '📍 Attiva la posizione';
-    return true;
-  };
-  // Se il popup resta senza risposta (o il telefono non lo mostra) non si resta bloccati.
-  setTimeout(() => fine() && chiediPosizione(true), 25000);
-  // getCurrentPosition dentro il tocco: è questo che fa comparire il popup di iPhone.
-  navigator.geolocation.getCurrentPosition((pos) => {
-    fine();
-    ultimoInvio = 0;
-    inviaPosizione(pos);
-    avviaPosizione();
-    mostraGioco();
-  }, (err) => {
-    if (!fine()) return;
-    chiediPosizione(true);
-  }, { enableHighAccuracy: true, maximumAge: 0, timeout: 20000 });
-});
-
-$('btnSenzaPosizione').addEventListener('click', () => {
-  senzaPosizione = true;
-  statoGps('Posizione non attiva', false);
-  mostraGioco();
-});
-
-function statoGps(testo, ok) {
-  $('statoGps').textContent = testo;
-  $('pallinoGps').className = 'pallino' + (ok === true ? ' ok' : ok === false ? ' ko' : '');
-}
+// Silenziosa: se il telefono la dà, arriva ai capi; se è negata o non va, si gioca senza e nessuno lo nota.
 
 function tracciamentoScaduto() {
   return squadra && Date.now() > squadra.tracciamentoFino;
 }
 
 function avviaPosizione() {
-  if (watchId !== null) return;
-  if (tracciamentoScaduto()) return statoGps('Tracciamento concluso', null);
-  if (!('geolocation' in navigator)) return statoGps('Questo telefono non supporta la posizione', false);
-
+  if (watchId !== null || tracciamentoScaduto() || !('geolocation' in navigator)) return;
   watchId = navigator.geolocation.watchPosition(inviaPosizione, (err) => {
-    if (err.code === 1) { // permesso tolto a gioco iniziato: si torna al pulsante
-      fermaPosizione();
-      aggiornaSceltaFoto();
-      return chiediPosizione(true);
-    }
-    statoGps('Posizione non disponibile, riprovo…', false);
+    if (err.code === 1) fermaPosizione(); // negata: niente posizione, niente messaggi
   }, { enableHighAccuracy: true, maximumAge: 10000, timeout: 30000 });
   tieniSchermoAcceso();
 }
@@ -171,10 +81,9 @@ function fermaPosizione() {
 }
 
 async function inviaPosizione(pos) {
-  if (tracciamentoScaduto()) {
-    fermaPosizione();
-    return statoGps('Tracciamento concluso', null);
-  }
+  ultimaPos = pos;
+  if (!squadra) return; // arrivata prima che il server abbia risposto all'ingresso: parte col prossimo giro
+  if (tracciamentoScaduto()) return fermaPosizione();
   const ora = Date.now();
   if (ora - ultimoInvio < INVIO_OGNI_MS) return;
   ultimoInvio = ora;
@@ -185,12 +94,16 @@ async function inviaPosizione(pos) {
       lng: pos.coords.longitude,
       precisione: pos.coords.accuracy,
     });
-    statoGps(`Posizione attiva · inviata alle ${new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}`, true);
   } catch (e) {
-    ultimoInvio = 0; // riprova al prossimo aggiornamento
-    statoGps('Posizione attiva, ma niente rete: riprovo…', false);
+    ultimoInvio = 0; // niente rete: riprova al prossimo aggiornamento
   }
 }
+
+// Il telefono manda una posizione nuova solo quando ci si sposta: da fermi si rimanda l'ultima,
+// così sulla mappa dei capi non sembra persa.
+setInterval(() => {
+  if (watchId !== null && ultimaPos) inviaPosizione(ultimaPos);
+}, INVIO_OGNI_MS);
 
 // Evita che lo schermo si spenga (e con lui il GPS) mentre la pagina è aperta.
 async function tieniSchermoAcceso() {
@@ -215,6 +128,7 @@ $('formIngresso').addEventListener('submit', async (e) => {
   $('erroreIngresso').textContent = '';
   const btn = e.currentTarget.querySelector('button');
   btn.disabled = true;
+  avviaPosizione(); // dentro il tocco su "Entra": su iPhone il popup della posizione compare solo così
   try {
     mostra(await chiama('/api/entra', { nome: $('campoNome').value }));
   } catch (err) {

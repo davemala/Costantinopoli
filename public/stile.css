@@ -85,16 +85,6 @@ button.secondario { background: #e7e1cf; color: var(--testo); }
 
 .errore { color: var(--rosso); font-weight: 600; min-height: 1.2em; }
 
-.gps {
-  font-size: .85rem;
-  color: var(--grigio);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.pallino { width: 10px; height: 10px; border-radius: 50%; background: #bbb; flex: none; }
-.pallino.ok { background: #2fa84f; }
-.pallino.ko { background: var(--rosso); }
 
 .progresso { display: flex; gap: 6px; margin-bottom: 14px; }
 .progresso span { flex: 1; height: 6px; border-radius: 3px; background: #ddd5bf; }
@@ -129,7 +119,6 @@ a.bottone {
 .scelta-foto { display: flex; gap: 10px; }
 .scelta-foto .bottone-foto { flex: 1; }
 
-.aiuto { margin-top: 16px; }
 
 .anteprima {
   display: block;
@@ -141,7 +130,6 @@ a.bottone {
   margin-bottom: 12px;
 }
 
-.suggerimento { font-size: .9rem; color: var(--grigio); margin: -4px 0 12px; text-align: center; }
 
 button.link {
   background: none;
